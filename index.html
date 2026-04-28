@@ -3,68 +3,80 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Employee Leave Tracker</title>
+<title>Leave Tracker</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:system-ui,-apple-system,sans-serif;background:#f5f5f3;color:#1a1a1a;min-height:100vh;padding:1rem}
-.app{max-width:960px;margin:0 auto}
+.app{max-width:980px;margin:0 auto}
 .app-header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:1.25rem}
 .app-title{font-size:20px;font-weight:700;color:#111}
 .app-subtitle{font-size:12px;color:#999;margin-top:2px}
-.tabs{display:flex;gap:4px;background:#e8e8e6;border-radius:10px;padding:4px;margin-bottom:1.25rem;width:fit-content}
-.tab{padding:6px 16px;border-radius:7px;font-size:13px;font-weight:500;cursor:pointer;border:none;background:transparent;color:#666;transition:all .15s;font-family:inherit}
+.tabs{display:flex;gap:4px;background:#e8e8e6;border-radius:10px;padding:4px;margin-bottom:1.25rem;flex-wrap:wrap}
+.tab{padding:6px 14px;border-radius:7px;font-size:13px;font-weight:500;cursor:pointer;border:none;background:transparent;color:#666;transition:all .15s;font-family:inherit}
 .tab.active{background:#fff;color:#111;box-shadow:0 1px 3px rgba(0,0,0,.1)}
-input[type=text],input[type=date],select,textarea{height:38px;padding:0 12px;border-radius:8px;border:1px solid #ddd;background:#fff;color:#1a1a1a;font-size:14px;font-family:inherit;outline:none;transition:border-color .15s}
-input[type=text]:focus,input[type=date]:focus,select:focus,textarea:focus{border-color:#185FA5}
-textarea{height:64px;padding:8px 12px;resize:vertical}
+input[type=text],input[type=date],input[type=time],select,textarea{height:38px;padding:0 12px;border-radius:8px;border:1px solid #ddd;background:#fff;color:#1a1a1a;font-size:14px;font-family:inherit;outline:none;transition:border-color .15s}
+input[type=text]:focus,input[type=date]:focus,input[type=time]:focus,select:focus,textarea:focus{border-color:#185FA5}
+textarea{height:60px;padding:8px 12px;resize:vertical}
 .btn{height:38px;padding:0 16px;border-radius:8px;border:1px solid #ddd;background:#fff;color:#1a1a1a;font-size:13px;font-family:inherit;cursor:pointer;white-space:nowrap;transition:all .12s;display:inline-flex;align-items:center;gap:5px}
 .btn:hover{background:#f0f0ee;border-color:#bbb}
 .btn:active{transform:scale(.98)}
 .btn.primary{background:#185FA5;color:#fff;border-color:#185FA5}
-.btn.primary:hover{background:#0C447C;border-color:#0C447C}
+.btn.primary:hover{background:#0C447C}
 .btn.danger{background:#fff0f0;color:#c0392b;border-color:#f5c6c6}
 .btn.danger:hover{background:#fee2e2}
 .btn.success{background:#f0fdf4;color:#166534;border-color:#bbf7d0}
 .btn.success:hover{background:#dcfce7}
+.btn.amber{background:#fffbeb;color:#92400e;border-color:#fde68a}
+.btn.amber:hover{background:#fef3c7}
 .btn.sm{height:30px;padding:0 10px;font-size:12px}
 .btn.xs{height:26px;padding:0 8px;font-size:11px}
 .btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin-bottom:1.25rem}
+
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(105px,1fr));gap:10px;margin-bottom:1.25rem}
 .stat{background:#fff;border-radius:10px;border:1px solid #e8e8e6;padding:.75rem 1rem}
-.stat-label{font-size:12px;color:#888;margin-bottom:4px}
-.stat-val{font-size:20px;font-weight:700;color:#111}
+.stat-label{font-size:11px;color:#888;margin-bottom:4px}
+.stat-val{font-size:19px;font-weight:700;color:#111}
+
 .topbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:1.25rem}
-.search-wrap{position:relative;flex:1;min-width:160px}
+.search-wrap{position:relative;flex:1;min-width:150px}
 .search-wrap input{width:100%;padding-left:32px}
 .search-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:15px;color:#888;pointer-events:none}
-.emp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px;margin-bottom:1.5rem}
-.emp-card{background:#fff;border:1px solid #e8e8e6;border-radius:12px;padding:1rem 1.25rem;cursor:pointer;transition:border-color .15s,box-shadow .15s}
+
+.emp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(295px,1fr));gap:12px;margin-bottom:1.5rem}
+.emp-card{background:#fff;border:1px solid #e8e8e6;border-radius:12px;padding:1rem 1.2rem;cursor:pointer;transition:border-color .15s,box-shadow .15s}
 .emp-card:hover{border-color:#aac8e8;box-shadow:0 2px 8px rgba(24,95,165,.08)}
 .emp-card.active{border-color:#185FA5;border-width:1.5px;box-shadow:0 2px 12px rgba(24,95,165,.12)}
 .emp-head{display:flex;align-items:center;gap:10px;margin-bottom:10px}
 .avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0}
 .emp-name{font-weight:600;font-size:14px;line-height:1.3}
-.emp-code{font-size:12px;color:#888;margin-top:1px}
-.leave-pills{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.emp-meta{font-size:12px;color:#888;margin-top:2px;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.badge{display:inline-flex;align-items:center;font-size:10px;padding:1px 6px;border-radius:20px;font-weight:600;text-transform:uppercase;letter-spacing:.3px}
+.badge.fulltime{background:#dbeafe;color:#1e40af}
+.badge.parttime{background:#fef9c3;color:#854d0e}
+.leave-pills{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px}
 .pill{font-size:11px;padding:2px 8px;border-radius:20px;font-weight:500}
 .pill.annual{background:#dbeafe;color:#1e40af}
 .pill.sick{background:#fee2d5;color:#9a3412}
 .pill.casual{background:#dcfce7;color:#166534}
 .pill.unpaid{background:#f1f0ee;color:#555}
-.offday-badge{display:inline-flex;align-items:center;font-size:11px;padding:1px 7px;border-radius:20px;background:#ede9fe;color:#5b21b6;font-weight:500;margin-left:5px}
+.pill.halfday{background:#fdf4ff;color:#7e22ce}
+.pill.perm{background:#fff7ed;color:#9a3412}
+.offday-badge{display:inline-flex;align-items:center;font-size:11px;padding:1px 7px;border-radius:20px;background:#ede9fe;color:#5b21b6;font-weight:500}
 .mini-bar{display:flex;gap:3px}
 .mini-dot{width:9px;height:9px;border-radius:2px;flex-shrink:0}
+
+/* Calendar */
 .cal-section{background:#fff;border:1px solid #e8e8e6;border-radius:12px;padding:1.25rem;margin-bottom:1.25rem}
 .cal-header{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:.75rem}
-.cal-title{font-size:16px;font-weight:700;color:#111}
+.cal-title{font-size:15px;font-weight:700}
 .cal-sub{font-size:12px;color:#888;margin-top:3px}
 .cal-nav{display:flex;gap:6px;align-items:center}
 .cal-nav span{font-size:14px;font-weight:500;min-width:130px;text-align:center}
-.cal-month-summary{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:.75rem;min-height:24px}
-.ms-chip{font-size:12px;padding:2px 10px;border-radius:20px;font-weight:500}
+.cal-month-summary{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:.75rem;min-height:24px}
+.ms-chip{font-size:11px;padding:2px 9px;border-radius:20px;font-weight:500}
 .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
 .cal-day-name{text-align:center;font-size:11px;color:#999;padding:4px 0;font-weight:500}
-.cal-cell{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:7px;font-size:12px;cursor:pointer;border:1.5px solid transparent;transition:background .1s}
+.cal-cell{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:7px;font-size:12px;cursor:pointer;border:1.5px solid transparent;transition:background .1s;position:relative}
 .cal-cell:hover:not(.empty){background:#f0f0ee}
 .cal-cell.empty{cursor:default}
 .cal-cell.today{border-color:#185FA5!important}
@@ -72,53 +84,63 @@ textarea{height:64px;padding:8px 12px;resize:vertical}
 .cal-cell.leave-sick{background:#fee2d5;color:#9a3412;font-weight:600}
 .cal-cell.leave-casual{background:#dcfce7;color:#166534;font-weight:600}
 .cal-cell.leave-unpaid{background:#f1f0ee;color:#555;font-weight:600}
+.cal-cell.leave-half{background:#fdf4ff;color:#7e22ce;font-weight:600}
+.cal-cell.has-perm::after{content:'';position:absolute;top:3px;right:3px;width:5px;height:5px;border-radius:50%;background:#f97316}
 .cal-cell.offday{background:#ede9fe;color:#5b21b6;font-weight:600}
 .cal-cell.mercantile{background:#fff3e0;color:#b45309;font-weight:600}
+.cal-cell.nonworking{background:#f8f8f6;color:#ccc}
 .cal-cell.weekend{color:#ccc}
 .cal-cell-sub{font-size:8px;margin-top:1px;opacity:.85}
-.cal-legend{display:flex;gap:12px;flex-wrap:wrap;margin-top:.85rem;padding-top:.75rem;border-top:1px solid #f0f0ee}
-.leg-item{display:flex;align-items:center;gap:5px;font-size:12px;color:#777}
+.cal-legend{display:flex;gap:10px;flex-wrap:wrap;margin-top:.85rem;padding-top:.75rem;border-top:1px solid #f0f0ee}
+.leg-item{display:flex;align-items:center;gap:5px;font-size:11px;color:#777}
 .leg-dot{width:10px;height:10px;border-radius:3px;flex-shrink:0}
+
+/* Permissions list under calendar */
+.perm-list{margin-top:1rem;padding-top:.75rem;border-top:1px solid #f0f0ee}
+.perm-list-title{font-size:13px;font-weight:600;color:#555;margin-bottom:.5rem;display:flex;align-items:center;justify-content:space-between}
+.perm-item{display:flex;align-items:center;gap:8px;padding:7px 10px;background:#fff7ed;border-radius:8px;margin-bottom:5px;font-size:12px;border:1px solid #fed7aa}
+.perm-item-date{font-weight:600;color:#92400e;min-width:70px}
+.perm-item-times{color:#9a3412;font-weight:500}
+.perm-item-reason{color:#78350f;flex:1}
+
 .panel{background:#fff;border:1px solid #e8e8e6;border-radius:12px;padding:1.25rem;margin-bottom:1.25rem}
 .panel-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:8px}
 .panel-title{font-size:15px;font-weight:600;color:#111}
 .data-table{width:100%;border-collapse:collapse;font-size:13px}
 .data-table th{text-align:left;padding:8px 10px;color:#888;font-weight:500;border-bottom:1px solid #f0f0ee;font-size:12px}
-.data-table td{padding:9px 10px;border-bottom:1px solid #f8f8f6;vertical-align:middle}
+.data-table td{padding:8px 10px;border-bottom:1px solid #f8f8f6;vertical-align:middle}
 .data-table tr:last-child td{border-bottom:none}
 .data-table tr:hover td{background:#fafaf8}
 .dept-list{display:flex;flex-direction:column;gap:6px}
 .dept-item{display:flex;align-items:center;justify-content:space-between;padding:9px 14px;background:#fafaf8;border-radius:8px;border:1px solid #f0f0ee}
-.dept-name{font-size:14px;font-weight:500}
-.dept-count{font-size:12px;color:#999}
+
 .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:100;align-items:center;justify-content:center;padding:1rem}
 .modal-bg.open{display:flex}
-.modal{background:#fff;border-radius:14px;border:1px solid #e0e0de;padding:1.5rem;width:min(430px,100%);max-height:92vh;overflow-y:auto}
+.modal{background:#fff;border-radius:14px;border:1px solid #e0e0de;padding:1.5rem;width:min(440px,100%);max-height:92vh;overflow-y:auto}
 .modal h3{font-size:16px;font-weight:700;margin-bottom:1rem;color:#111}
-.form-row{margin-bottom:14px}
+.form-row{margin-bottom:13px}
 .form-row label{display:block;font-size:13px;color:#666;margin-bottom:5px;font-weight:500}
 .form-row input,.form-row select,.form-row textarea{width:100%}
+.form-row-2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:13px}
+.form-row-2 label{display:block;font-size:13px;color:#666;margin-bottom:5px;font-weight:500}
+.form-row-2 input,.form-row-2 select{width:100%}
 .form-hint{font-size:11px;color:#aaa;margin-top:4px}
 .modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:1rem;flex-wrap:wrap}
 .err-msg{font-size:13px;color:#c0392b;margin-bottom:8px;display:none;padding:7px 10px;background:#fef2f2;border-radius:7px}
-.lv-summary{font-size:12px;color:#555;margin-bottom:10px;padding:8px 10px;background:#f5f5f3;border-radius:7px;display:none;line-height:1.5}
-.report-controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:1rem}
+.lv-summary{font-size:12px;color:#555;margin-bottom:10px;padding:8px 10px;background:#f5f5f3;border-radius:7px;display:none;line-height:1.6}
+
+.report-controls{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1rem}
 .report-table-wrap{overflow-x:auto}
-.merc-badge{font-size:11px;padding:2px 8px;border-radius:20px;font-weight:500;background:#fff3e0;color:#b45309}
+.section-tabs{display:flex;gap:4px;margin-bottom:1rem}
+.section-tab{padding:5px 14px;border-radius:6px;font-size:13px;font-weight:500;cursor:pointer;border:1px solid #ddd;background:#fff;color:#666;font-family:inherit}
+.section-tab.active{background:#185FA5;color:#fff;border-color:#185FA5}
+
 .no-data{text-align:center;padding:2rem;color:#aaa;font-size:14px}
-
-/* Setup banner */
-.setup-banner{background:#fff8e1;border:1px solid #fcd34d;border-radius:10px;padding:1rem 1.25rem;margin-bottom:1.25rem;font-size:13px;line-height:1.7;color:#78350f}
-.setup-banner strong{display:block;font-size:14px;margin-bottom:4px;color:#92400e}
-.setup-banner code{background:#fef3c7;padding:2px 6px;border-radius:4px;font-size:12px;font-family:monospace}
-
-/* Spinner overlay */
 .spinner-overlay{display:none;position:fixed;inset:0;background:rgba(255,255,255,.7);z-index:200;align-items:center;justify-content:center;flex-direction:column;gap:12px}
 .spinner-overlay.show{display:flex}
 .spinner{width:36px;height:36px;border:3px solid #e8e8e6;border-top-color:#185FA5;border-radius:50%;animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 .spinner-msg{font-size:14px;color:#555}
-
 .toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);background:#111;color:#fff;font-size:13px;padding:9px 18px;border-radius:9px;z-index:999;opacity:0;transition:opacity .2s;pointer-events:none;white-space:nowrap}
 .toast.show{opacity:1}
 .toast.error{background:#c0392b}
@@ -127,8 +149,7 @@ textarea{height:64px;padding:8px 12px;resize:vertical}
   .cal-cell{font-size:11px}
   .cal-cell-sub{display:none}
   .modal{padding:1.1rem}
-  .tabs{flex-wrap:wrap}
-  .report-controls select{flex:1;min-width:120px}
+  .form-row-2{grid-template-columns:1fr}
 }
 </style>
 </head>
@@ -142,21 +163,14 @@ textarea{height:64px;padding:8px 12px;resize:vertical}
 <div class="app-header">
   <div>
     <div class="app-title">Leave Tracker</div>
-    <div class="app-subtitle" id="syncStatus">Connecting to Google Sheets…</div>
+    <div class="app-subtitle" id="syncStatus">Connecting…</div>
   </div>
   <button class="btn success" onclick="exportCSV()">&#11015; Export CSV</button>
 </div>
 
-<!-- Setup banner — shown if SCRIPT_URL not configured -->
-<div class="setup-banner" id="setupBanner" style="display:none">
-  <strong>&#9888; Google Sheets not connected yet</strong>
-  Open this HTML file in a text editor, find the line near the top of the &lt;script&gt; that says
-  <code>const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyxTRQyt0dve1gWiQZfne5q-24r-QCmlVs1b3_jicfghFZwzd5SC43oJ0dd8HfvNDeQCA/exec';</code> and paste your Apps Script Web App URL between the quotes.
-  Then save and reopen the file. See the setup guide for full instructions.
-</div>
-
 <div class="tabs">
   <button class="tab active" onclick="switchTab('leaves')">Employees &amp; Leaves</button>
+  <button class="tab" onclick="switchTab('permissions')">Permissions</button>
   <button class="tab" onclick="switchTab('report')">Report</button>
   <button class="tab" onclick="switchTab('settings')">Departments</button>
 </div>
@@ -167,9 +181,14 @@ textarea{height:64px;padding:8px 12px;resize:vertical}
   <div class="topbar">
     <div class="search-wrap">
       <span class="search-icon">&#9906;</span>
-      <input type="text" id="searchBox" placeholder="Search by name or code…" oninput="renderAll()">
+      <input type="text" id="searchBox" placeholder="Search by name or code…" oninput="renderEmployees()">
     </div>
-    <select id="deptFilter" onchange="renderAll()"></select>
+    <select id="deptFilter" onchange="renderEmployees()"></select>
+    <select id="typeFilter" onchange="renderEmployees()">
+      <option value="">All types</option>
+      <option value="full-time">Full-time</option>
+      <option value="part-time">Part-time</option>
+    </select>
     <button class="btn primary" onclick="openLeaveModal(null)">+ Add leave</button>
     <button class="btn" onclick="openEmpModal(null)">+ New employee</button>
   </div>
@@ -193,9 +212,48 @@ textarea{height:64px;padding:8px 12px;resize:vertical}
       <div class="leg-item"><div class="leg-dot" style="background:#fdba74"></div>Sick</div>
       <div class="leg-item"><div class="leg-dot" style="background:#86efac"></div>Casual</div>
       <div class="leg-item"><div class="leg-dot" style="background:#d1d0ce"></div>Unpaid</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#e9d5ff"></div>Half day</div>
       <div class="leg-item"><div class="leg-dot" style="background:#c4b5fd"></div>Weekly off</div>
-      <div class="leg-item"><div class="leg-dot" style="background:#fcd34d"></div>Mercantile holiday</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#fcd34d"></div>Mercantile</div>
+      <div class="leg-item"><div style="width:10px;height:10px;border-radius:50%;background:#f97316;flex-shrink:0"></div>Permission</div>
     </div>
+    <div class="perm-list" id="calPermList" style="display:none">
+      <div class="perm-list-title">
+        <span>Permissions this month</span>
+        <button class="btn xs amber" onclick="openPermModal(null)">+ Add permission</button>
+      </div>
+      <div id="calPermItems"></div>
+    </div>
+  </div>
+</div>
+
+<!-- PERMISSIONS TAB -->
+<div id="tab-permissions" style="display:none">
+  <div class="panel">
+    <div class="panel-header">
+      <div class="panel-title">Permission log</div>
+      <button class="btn amber" onclick="openPermModal(null)">+ Add permission</button>
+    </div>
+    <div class="report-controls">
+      <select id="prpt_emp" onchange="renderPermReport()"><option value="">All employees</option></select>
+      <select id="prpt_year" onchange="renderPermReport()"></select>
+      <select id="prpt_month" onchange="renderPermReport()">
+        <option value="">All months</option>
+        <option value="0">January</option><option value="1">February</option><option value="2">March</option>
+        <option value="3">April</option><option value="4">May</option><option value="5">June</option>
+        <option value="6">July</option><option value="7">August</option><option value="8">September</option>
+        <option value="9">October</option><option value="10">November</option><option value="11">December</option>
+      </select>
+    </div>
+    <div class="report-table-wrap">
+      <table class="data-table">
+        <thead><tr>
+          <th>Employee</th><th>Code</th><th>Date</th><th>Time In</th><th>Time Out</th><th>Reason</th><th></th>
+        </tr></thead>
+        <tbody id="permReportBody"></tbody>
+      </table>
+    </div>
+    <div style="margin-top:8px;font-size:13px;color:#888" id="permReportSummary"></div>
   </div>
 </div>
 
@@ -225,13 +283,13 @@ textarea{height:64px;padding:8px 12px;resize:vertical}
     <div class="report-table-wrap">
       <table class="data-table">
         <thead><tr>
-          <th>Employee</th><th>Code</th><th>Dept</th><th>Type</th>
+          <th>Employee</th><th>Type</th><th>Leave</th><th>Half</th>
           <th>From</th><th>To</th><th>Days</th><th>Note</th><th></th>
         </tr></thead>
         <tbody id="reportBody"></tbody>
       </table>
     </div>
-    <div style="margin-top:10px;font-size:13px;color:#888" id="reportSummary"></div>
+    <div style="margin-top:8px;font-size:13px;color:#888" id="reportSummary"></div>
   </div>
 </div>
 
@@ -245,7 +303,7 @@ textarea{height:64px;padding:8px 12px;resize:vertical}
     <div class="dept-list" id="deptList"></div>
   </div>
 </div>
-</div><!-- .app -->
+</div>
 
 <!-- Leave modal -->
 <div class="modal-bg" id="leaveModal">
@@ -253,13 +311,23 @@ textarea{height:64px;padding:8px 12px;resize:vertical}
   <h3 id="leaveModalTitle">Log leave</h3>
   <div class="form-row"><label>Employee</label><select id="lv_emp" onchange="updateLeaveSummary()"></select></div>
   <div class="form-row"><label>Leave type</label>
-    <select id="lv_type">
+    <select id="lv_type" onchange="toggleHalfDay()">
       <option value="annual">Annual</option><option value="sick">Sick</option>
       <option value="casual">Casual</option><option value="unpaid">Unpaid</option>
     </select>
   </div>
-  <div class="form-row"><label>From date</label><input type="date" id="lv_from" onchange="updateLeaveSummary()"></div>
-  <div class="form-row"><label>To date</label><input type="date" id="lv_to" onchange="updateLeaveSummary()"></div>
+  <div class="form-row" id="halfDayRow">
+    <label>Full day or half day?</label>
+    <select id="lv_half" onchange="updateLeaveSummary()">
+      <option value="">Full day</option>
+      <option value="first">First half</option>
+      <option value="second">Second half</option>
+    </select>
+  </div>
+  <div class="form-row-2">
+    <div><label>From date</label><input type="date" id="lv_from" onchange="updateLeaveSummary()"></div>
+    <div><label>To date</label><input type="date" id="lv_to" onchange="updateLeaveSummary()"></div>
+  </div>
   <div class="lv-summary" id="lv_summary"></div>
   <div class="form-row"><label>Note (optional)</label><textarea id="lv_note" placeholder="Reason or remarks…"></textarea></div>
   <div class="err-msg" id="lv_err"></div>
@@ -270,12 +338,39 @@ textarea{height:64px;padding:8px 12px;resize:vertical}
 </div>
 </div>
 
+<!-- Permission modal -->
+<div class="modal-bg" id="permModal">
+<div class="modal">
+  <h3 id="permModalTitle">Log permission</h3>
+  <div class="form-row"><label>Employee</label><select id="pm_emp"></select></div>
+  <div class="form-row"><label>Date</label><input type="date" id="pm_date"></div>
+  <div class="form-row-2">
+    <div><label>Actual time in <span style="font-weight:400;color:#aaa">(if came late)</span></label><input type="time" id="pm_timein"></div>
+    <div><label>Actual time out <span style="font-weight:400;color:#aaa">(if left early)</span></label><input type="time" id="pm_timeout"></div>
+  </div>
+  <div class="form-row"><label>Reason</label><textarea id="pm_reason" placeholder="e.g. Doctor's appointment, family matter…"></textarea></div>
+  <div class="err-msg" id="pm_err"></div>
+  <div class="modal-actions">
+    <button class="btn" onclick="closePermModal()">Cancel</button>
+    <button class="btn amber" id="savePermBtn" onclick="savePermission()">Save permission</button>
+  </div>
+</div>
+</div>
+
 <!-- Employee modal -->
 <div class="modal-bg" id="empModal">
 <div class="modal">
   <h3 id="empModalTitle">Add employee</h3>
   <div class="form-row"><label>Full name</label><input type="text" id="em_name" placeholder="e.g. Kamal Perera"></div>
-  <div class="form-row"><label>Employee code</label><input type="text" id="em_code" placeholder="e.g. EMP-042"></div>
+  <div class="form-row-2">
+    <div><label>Employee code</label><input type="text" id="em_code" placeholder="e.g. EMP-042"></div>
+    <div><label>Employment type</label>
+      <select id="em_type">
+        <option value="full-time">Full-time</option>
+        <option value="part-time">Part-time</option>
+      </select>
+    </div>
+  </div>
   <div class="form-row"><label>Department</label><select id="em_dept"></select></div>
   <div class="form-row">
     <label>Weekly paid holiday (off day)</label>
@@ -285,7 +380,7 @@ textarea{height:64px;padding:8px 12px;resize:vertical}
       <option value="3">Wednesday</option><option value="4">Thursday</option><option value="5">Friday</option>
       <option value="6">Saturday</option>
     </select>
-    <div class="form-hint">Highlighted in purple on the calendar every week</div>
+    <div class="form-hint">This day is highlighted purple on the calendar every week</div>
   </div>
   <div class="err-msg" id="em_err"></div>
   <div class="modal-actions">
@@ -296,9 +391,9 @@ textarea{height:64px;padding:8px 12px;resize:vertical}
 </div>
 </div>
 
-<!-- Department modal -->
+<!-- Dept modal -->
 <div class="modal-bg" id="deptModal">
-<div class="modal" style="width:min(360px,100%)">
+<div class="modal" style="width:min(340px,100%)">
   <h3>Add department</h3>
   <div class="form-row"><label>Department name</label><input type="text" id="dept_name" placeholder="e.g. Marketing"></div>
   <div class="err-msg" id="dept_err"></div>
@@ -324,59 +419,34 @@ textarea{height:64px;padding:8px 12px;resize:vertical}
 <div class="toast" id="toast"></div>
 
 <script>
-// ══════════════════════════════════════════════════════════════
-//  ▼▼▼  PASTE YOUR APPS SCRIPT WEB APP URL BELOW  ▼▼▼
-// ══════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyxTRQyt0dve1gWiQZfne5q-24r-QCmlVs1b3_jicfghFZwzd5SC43oJ0dd8HfvNDeQCA/exec';
-// ══════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════
 
-// ── Sri Lankan Mercantile Holidays 2025–2026 ──────────────────
 const MERC = {
-  '2025-01-13':'Duruthu Full Moon Poya Day',
-  '2025-01-14':'Tamil Thai Pongal Day',
-  '2025-02-04':'National Independence Day',
-  '2025-02-12':'Navam Full Moon Poya Day',
-  '2025-03-13':'Madin Full Moon Poya Day',
-  '2025-03-31':'Id-Ul-Fitr (Ramazan Festival Day)',
-  '2025-04-12':'Bak Full Moon Poya Day',
-  '2025-04-13':'Day Prior to Sinhala & Tamil New Year',
-  '2025-04-14':'Sinhala & Tamil New Year Day',
-  '2025-05-01':'May Day',
-  '2025-05-12':'Vesak Full Moon Poya Day',
-  '2025-05-13':'Day Following Vesak Full Moon Poya Day',
-  '2025-06-10':'Poson Full Moon Poya Day',
-  '2025-07-10':'Esala Full Moon Poya Day',
-  '2025-08-08':'Nikini Full Moon Poya Day',
-  '2025-09-05':'Milad-Un-Nabi',
-  '2025-09-07':'Binara Full Moon Poya Day',
-  '2025-10-06':'Vap Full Moon Poya Day',
-  '2025-11-05':'Ill Full Moon Poya Day',
-  '2025-12-04':'Unduvap Full Moon Poya Day',
+  '2025-01-13':'Duruthu Full Moon Poya','2025-01-14':'Tamil Thai Pongal Day',
+  '2025-02-04':'National Independence Day','2025-02-12':'Navam Full Moon Poya',
+  '2025-03-13':'Madin Full Moon Poya','2025-03-31':'Id-Ul-Fitr',
+  '2025-04-12':'Bak Full Moon Poya','2025-04-13':'Day prior to New Year',
+  '2025-04-14':'Sinhala & Tamil New Year','2025-05-01':'May Day',
+  '2025-05-12':'Vesak Full Moon Poya','2025-05-13':'Day following Vesak',
+  '2025-06-10':'Poson Full Moon Poya','2025-07-10':'Esala Full Moon Poya',
+  '2025-08-08':'Nikini Full Moon Poya','2025-09-05':'Milad-Un-Nabi',
+  '2025-09-07':'Binara Full Moon Poya','2025-10-06':'Vap Full Moon Poya',
+  '2025-11-05':'Ill Full Moon Poya','2025-12-04':'Unduvap Full Moon Poya',
   '2025-12-25':'Christmas Day',
-  '2026-01-03':'Duruthu Full Moon Poya Day',
-  '2026-01-15':'Tamil Thai Pongal Day',
-  '2026-02-01':'Nawam Full Moon Poya Day',
-  '2026-02-04':'Independence Day',
-  '2026-02-15':'Maha Sivarathri Day',
-  '2026-03-02':'Medin Full Moon Poya Day',
-  '2026-03-21':'Id-Ul-Fitr (Ramazan Festival Day)',
-  '2026-04-01':'Bak Full Moon Poya Day',
-  '2026-04-13':'Day Prior to Sinhala & Tamil New Year',
-  '2026-04-14':'Sinhala & Tamil New Year Day',
-  '2026-05-01':'May Day & Adhi Vesak Full Moon Poya Day',
-  '2026-05-28':'Id-Ul-Alha (Hadji Festival Day)',
-  '2026-05-30':'Vesak Full Moon Poya Day',
-  '2026-05-31':'Day Following Vesak Full Moon Poya Day',
-  '2026-06-29':'Poson Full Moon Poya Day',
-  '2026-07-29':'Esala Full Moon Poya Day',
-  '2026-08-26':'Milad-Un-Nabi',
-  '2026-08-27':'Nikini Full Moon Poya Day',
-  '2026-09-26':'Binara Full Moon Poya Day',
-  '2026-10-25':'Vap Full Moon Poya Day',
-  '2026-11-08':'Deepavali Festival Day',
-  '2026-11-24':'Il Full Moon Poya Day',
-  '2026-12-23':'Unduvap Full Moon Poya Day',
-  '2026-12-25':'Christmas Day',
+  '2026-01-03':'Duruthu Full Moon Poya','2026-01-15':'Tamil Thai Pongal Day',
+  '2026-02-01':'Nawam Full Moon Poya','2026-02-04':'Independence Day',
+  '2026-02-15':'Maha Sivarathri','2026-03-02':'Medin Full Moon Poya',
+  '2026-03-21':'Id-Ul-Fitr','2026-04-01':'Bak Full Moon Poya',
+  '2026-04-13':'Day prior to New Year','2026-04-14':'Sinhala & Tamil New Year',
+  '2026-05-01':'May Day & Adhi Vesak','2026-05-28':'Id-Ul-Alha',
+  '2026-05-30':'Vesak Full Moon Poya','2026-05-31':'Day following Vesak',
+  '2026-06-29':'Poson Full Moon Poya','2026-07-29':'Esala Full Moon Poya',
+  '2026-08-26':'Milad-Un-Nabi','2026-08-27':'Nikini Full Moon Poya',
+  '2026-09-26':'Binara Full Moon Poya','2026-10-25':'Vap Full Moon Poya',
+  '2026-11-08':'Deepavali','2026-11-24':'Il Full Moon Poya',
+  '2026-12-23':'Unduvap Full Moon Poya','2026-12-25':'Christmas Day',
 };
 
 const DAY_NAMES=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
@@ -387,71 +457,51 @@ function ini(n){return n.trim().split(/\s+/).map(w=>w[0]).join('').slice(0,2).to
 function abg(id){return ABG[id%ABG.length]}
 function afg(id){return AFG[id%AFG.length]}
 
-// ── State ────────────────────────────────────────────────────
-let departments=[], employees=[], leaves=[];
-let nextEmpId=1, nextLvId=1;
+let departments=[], employees=[], leaves=[], permissions=[];
+let nextEmpId=1, nextLvId=1, nextPermId=1;
 let selectedEmpId=null;
 let calY=new Date().getFullYear(), calM=new Date().getMonth();
-let editingEmpId=null, editingLvId=null;
+let editingEmpId=null, editingLvId=null, editingPermId=null;
 let activeTab='leaves';
 let confirmCb=null;
 
-// ── API helpers ───────────────────────────────────────────────
-function spinner(show, msg='Saving…'){
-  document.getElementById('spinnerOverlay').classList.toggle('show', show);
-  document.getElementById('spinnerMsg').textContent = msg;
+function spinner(show,msg='Saving…'){
+  document.getElementById('spinnerOverlay').classList.toggle('show',show);
+  document.getElementById('spinnerMsg').textContent=msg;
 }
-function showToast(msg, isErr=false){
+function showToast(msg,isErr=false){
   const t=document.getElementById('toast');
-  t.textContent=msg;
-  t.className='toast'+(isErr?' error':'');
-  t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),2500);
+  t.textContent=msg;t.className='toast'+(isErr?' error':'');
+  t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);
 }
-
 async function apiGet(params){
-  const url=SCRIPT_URL+'?'+new URLSearchParams(params);
-  const r=await fetch(url);
-  const j=await r.json();
-  if(j.error) throw new Error(j.error);
-  return j;
+  const r=await fetch(SCRIPT_URL+'?'+new URLSearchParams(params));
+  const j=await r.json();if(j.error)throw new Error(j.error);return j;
 }
 async function apiPost(body){
-  const r=await fetch(SCRIPT_URL,{
-    method:'POST',
-    body:JSON.stringify(body)
-  });
-  const j=await r.json();
-  if(j.error) throw new Error(j.error);
-  return j;
+  const r=await fetch(SCRIPT_URL,{method:'POST',body:JSON.stringify(body)});
+  const j=await r.json();if(j.error)throw new Error(j.error);return j;
 }
 
-// ── Load all data ─────────────────────────────────────────────
 async function loadAll(){
-  if(!SCRIPT_URL){
-    document.getElementById('setupBanner').style.display='block';
-    document.getElementById('syncStatus').textContent='Not connected — see yellow banner above';
-    return;
-  }
   spinner(true,'Loading data…');
-  try {
-    const data = await apiGet({action:'getAll'});
-    departments = data.departments || [];
-    employees   = data.employees   || [];
-    leaves      = data.leaves      || [];
-    nextEmpId   = data.nextEmpId   || 1;
-    nextLvId    = data.nextLeaveId || 1;
-    document.getElementById('syncStatus').textContent='Connected · Last loaded '+new Date().toLocaleTimeString();
+  try{
+    const data=await apiGet({action:'getAll'});
+    departments=data.departments||[];
+    employees=data.employees||[];
+    leaves=data.leaves||[];
+    permissions=data.permissions||[];
+    nextEmpId=data.nextEmpId||1;
+    nextLvId=data.nextLeaveId||1;
+    nextPermId=data.nextPermId||1;
+    document.getElementById('syncStatus').textContent='Connected · '+new Date().toLocaleTimeString();
     renderAll();
-  } catch(e){
-    document.getElementById('syncStatus').textContent='Connection error — check your Script URL';
-    showToast('Could not connect to Google Sheets', true);
-  } finally {
-    spinner(false);
-  }
+  }catch(e){
+    document.getElementById('syncStatus').textContent='Connection error';
+    showToast('Could not connect to Google Sheets',true);
+  }finally{spinner(false);}
 }
 
-// ── Helpers ───────────────────────────────────────────────────
 function range(from,to){
   const d=[],cur=new Date(from),end=new Date(to);
   while(cur<=end){d.push(cur.toISOString().slice(0,10));cur.setDate(cur.getDate()+1);}
@@ -459,65 +509,93 @@ function range(from,to){
 }
 function leavemap(empId){
   const m={};
-  leaves.filter(l=>l.empId===empId).forEach(l=>range(l.from,l.to).forEach(d=>{m[d]=l.type;}));
+  leaves.filter(l=>l.empId===empId).forEach(l=>{
+    range(l.from,l.to).forEach(d=>{m[d]={type:l.type,half:l.half||''};});
+  });
+  return m;
+}
+function permmap(empId){
+  const m={};
+  permissions.filter(p=>p.empId===empId).forEach(p=>{m[p.date]=p;});
   return m;
 }
 function fmt(ds){if(!ds)return '';const[y,m,d]=ds.split('-');return `${d}/${m}/${y}`;}
 function isMerc(ds){return !!MERC[ds];}
 
-// ── Tabs ──────────────────────────────────────────────────────
 function switchTab(t){
   activeTab=t;
-  ['leaves','report','settings'].forEach((x,i)=>{
+  ['leaves','permissions','report','settings'].forEach((x,i)=>{
     document.getElementById('tab-'+x).style.display=x===t?'':'none';
     document.querySelectorAll('.tab')[i].classList.toggle('active',x===t);
   });
   if(t==='report')renderReport();
   if(t==='settings')renderDepts();
+  if(t==='permissions')renderPermReport();
 }
 
-// ── Stats ─────────────────────────────────────────────────────
 function renderStats(){
   const today=new Date().toISOString().slice(0,10);
   const onLeave=new Set();
   leaves.forEach(l=>{if(range(l.from,l.to).includes(today))onLeave.add(l.empId);});
   const tm=new Date(),ty=tm.getFullYear(),tmo=tm.getMonth();
-  const md=leaves.reduce((s,l)=>{const f=new Date(l.from);return f.getFullYear()===ty&&f.getMonth()===tmo?s+range(l.from,l.to).length:s;},0);
-  const ad=leaves.filter(l=>l.type==='annual').reduce((s,l)=>s+range(l.from,l.to).length,0);
+  const md=leaves.reduce((s,l)=>{
+    const f=new Date(l.from);
+    const days=range(l.from,l.to).length;
+    const val=l.half?0.5:days;
+    return f.getFullYear()===ty&&f.getMonth()===tmo?s+val:s;
+  },0);
+  const ft=employees.filter(e=>e.empType==='full-time').length;
+  const pt=employees.filter(e=>e.empType==='part-time').length;
+  const thisMonthPerms=permissions.filter(p=>{
+    const f=new Date(p.date);return f.getFullYear()===ty&&f.getMonth()===tmo;
+  }).length;
   document.getElementById('stats').innerHTML=`
-    <div class="stat"><div class="stat-label">Employees</div><div class="stat-val">${employees.length}</div></div>
+    <div class="stat"><div class="stat-label">Full-time</div><div class="stat-val">${ft}</div></div>
+    <div class="stat"><div class="stat-label">Part-time</div><div class="stat-val">${pt}</div></div>
     <div class="stat"><div class="stat-label">On leave today</div><div class="stat-val">${onLeave.size}</div></div>
-    <div class="stat"><div class="stat-label">This month</div><div class="stat-val">${md}d</div></div>
-    <div class="stat"><div class="stat-label">Annual total</div><div class="stat-val">${ad}d</div></div>
+    <div class="stat"><div class="stat-label">Leave days this month</div><div class="stat-val">${md}</div></div>
+    <div class="stat"><div class="stat-label">Permissions this month</div><div class="stat-val">${thisMonthPerms}</div></div>
   `;
 }
 
-// ── Dept filter ───────────────────────────────────────────────
 function populateDeptFilter(){
   const sel=document.getElementById('deptFilter');
   const cur=sel.value;
   sel.innerHTML='<option value="">All departments</option>'+departments.map(d=>`<option${cur===d?' selected':''}>${d}</option>`).join('');
 }
 
-// ── Employees ─────────────────────────────────────────────────
 function renderEmployees(){
   populateDeptFilter();
   const q=document.getElementById('searchBox').value.toLowerCase();
   const dept=document.getElementById('deptFilter').value;
-  const filtered=employees.filter(e=>(e.name.toLowerCase().includes(q)||e.code.toLowerCase().includes(q))&&(!dept||e.dept===dept));
+  const etype=document.getElementById('typeFilter').value;
+  const filtered=employees.filter(e=>
+    (e.name.toLowerCase().includes(q)||e.code.toLowerCase().includes(q))&&
+    (!dept||e.dept===dept)&&(!etype||e.empType===etype)
+  );
   if(!filtered.length){document.getElementById('empGrid').innerHTML='<div class="no-data">No employees found</div>';return;}
   document.getElementById('empGrid').innerHTML=filtered.map(e=>{
     const lm=leavemap(e.id);
-    const tc={annual:0,sick:0,casual:0,unpaid:0};
-    Object.values(lm).forEach(t=>tc[t]=(tc[t]||0)+1);
-    const tot=Object.values(tc).reduce((a,b)=>a+b,0);
-    const pills=Object.entries(tc).filter(([,v])=>v>0).map(([k,v])=>`<span class="pill ${k}">${v}d ${k}</span>`).join('');
+    const pm=permmap(e.id);
+    const tc={annual:0,sick:0,casual:0,unpaid:0,half:0};
+    Object.values(lm).forEach(v=>{
+      if(v.half)tc.half+=0.5;else tc[v.type]=(tc[v.type]||0)+1;
+    });
+    const permCount=Object.keys(pm).length;
+    const pills=Object.entries(tc).filter(([k,v])=>v>0).map(([k,v])=>
+      k==='half'?`<span class="pill halfday">${v}d half</span>`:
+      `<span class="pill ${k}">${v}d ${k}</span>`
+    ).join('');
+    const permPill=permCount>0?`<span class="pill perm">${permCount} perm</span>`:'';
     const odb=e.offday!==''&&e.offday!==undefined?`<span class="offday-badge">${DAY_NAMES[e.offday]} off</span>`:'';
+    const typeBadge=`<span class="badge ${e.empType==='part-time'?'parttime':'fulltime'}">${e.empType==='part-time'?'Part-time':'Full-time'}</span>`;
     const last7=[];for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);last7.push(d.toISOString().slice(0,10));}
     const dots=last7.map(d=>{
-      const t=lm[d];const dow=new Date(d).getDay();
+      const lv=lm[d];const dow=new Date(d).getDay();
       const isOff=e.offday!==''&&e.offday!==undefined&&dow===parseInt(e.offday);
-      const bg=t?({annual:'#93c5fd',sick:'#fdba74',casual:'#86efac',unpaid:'#d1d0ce'}[t]):isMerc(d)?'#fcd34d':isOff?'#c4b5fd':'#e8e8e6';
+      const hasPerm=!!pm[d];
+      const bg=lv?({annual:'#93c5fd',sick:'#fdba74',casual:'#86efac',unpaid:'#d1d0ce'}[lv.type]||'#e9d5ff'):
+        isMerc(d)?'#fcd34d':isOff?'#c4b5fd':hasPerm?'#fed7aa':'#e8e8e6';
       return `<div class="mini-dot" title="${d}" style="background:${bg}"></div>`;
     }).join('');
     return `<div class="emp-card${selectedEmpId===e.id?' active':''}" onclick="selectEmployee(${e.id})">
@@ -525,64 +603,100 @@ function renderEmployees(){
         <div class="avatar" style="background:${abg(e.id)};color:${afg(e.id)}">${ini(e.name)}</div>
         <div style="flex:1;min-width:0">
           <div class="emp-name">${e.name}${odb}</div>
-          <div class="emp-code">${e.code} &middot; ${e.dept}</div>
+          <div class="emp-meta">${typeBadge}<span>${e.code} &middot; ${e.dept}</span></div>
         </div>
-        <div style="display:flex;gap:6px;align-items:center">
-          <span style="font-size:13px;color:#888">${tot}d</span>
-          <button class="btn sm" onclick="event.stopPropagation();openEmpModal(${e.id})">Edit</button>
-        </div>
+        <button class="btn sm" onclick="event.stopPropagation();openEmpModal(${e.id})">Edit</button>
       </div>
-      <div class="leave-pills">${pills||'<span style="font-size:12px;color:#ccc">No leaves recorded</span>'}</div>
+      <div class="leave-pills">${pills+permPill||'<span style="font-size:12px;color:#ccc">No records</span>'}</div>
       <div class="mini-bar">${dots}</div>
     </div>`;
   }).join('');
 }
 
-// ── Calendar ──────────────────────────────────────────────────
 function renderCalendar(){
   const e=employees.find(x=>x.id===selectedEmpId);
   if(!e){document.getElementById('calSection').style.display='none';return;}
   document.getElementById('calSection').style.display='block';
   const offday=e.offday!==''&&e.offday!==undefined?parseInt(e.offday):null;
   document.getElementById('calEmpName').textContent=e.name;
-  document.getElementById('calEmpSub').innerHTML=`${e.code} &middot; ${e.dept} &nbsp;&middot;&nbsp; <span style="color:#5b21b6">${offday!==null?'Weekly off: '+DAY_NAMES[offday]:'No weekly off day set'}</span>`;
+  document.getElementById('calEmpSub').innerHTML=
+    `${e.code} &middot; ${e.dept} &middot; <span class="badge ${e.empType==='part-time'?'parttime':'fulltime'}">${e.empType}</span>`+
+    (offday!==null?` &nbsp;&middot;&nbsp; <span style="color:#5b21b6">Weekly off: ${DAY_NAMES[offday]}</span>`:'');
   document.getElementById('calMonthLabel').textContent=new Date(calY,calM,1).toLocaleString('default',{month:'long',year:'numeric'});
+
   const lm=leavemap(e.id);
+  const pm=permmap(e.id);
   const fd=new Date(calY,calM,1).getDay();
   const dim=new Date(calY,calM+1,0).getDate();
   const today=new Date().toISOString().slice(0,10);
-  let mL={annual:0,sick:0,casual:0,unpaid:0},mO=0,mH=0;
+
+  let mL={annual:0,sick:0,casual:0,unpaid:0},mHalf=0,mO=0,mH=0,mP=0;
   for(let d=1;d<=dim;d++){
     const ds=`${calY}-${String(calM+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
     const dow=new Date(ds).getDay();
-    if(lm[ds])mL[lm[ds]]++;
+    const lv=lm[ds];
+    if(lv){if(lv.half)mHalf+=0.5;else mL[lv.type]++;}
     else if(offday!==null&&dow===offday)mO++;
     else if(isMerc(ds))mH++;
+    if(pm[ds])mP++;
   }
   const chips=Object.entries(mL).filter(([,v])=>v>0).map(([k,v])=>`<span class="ms-chip pill ${k}">${v}d ${k}</span>`).join('');
-  const och=mO>0?`<span class="ms-chip pill" style="background:#ede9fe;color:#5b21b6">${mO} weekly off</span>`:'';
-  const hch=mH>0?`<span class="ms-chip merc-badge">${mH} holiday${mH>1?'s':''}</span>`:'';
-  document.getElementById('calMonthSummary').innerHTML=chips+och+hch||'<span style="font-size:12px;color:#bbb">No leaves this month</span>';
+  const halfChip=mHalf>0?`<span class="ms-chip pill halfday">${mHalf}d half</span>`:'';
+  const offChip=mO>0?`<span class="ms-chip" style="background:#ede9fe;color:#5b21b6">${mO} weekly off</span>`:'';
+  const holChip=mH>0?`<span class="ms-chip" style="background:#fff3e0;color:#b45309">${mH} holiday${mH>1?'s':''}</span>`:'';
+  const permChip=mP>0?`<span class="ms-chip" style="background:#fff7ed;color:#9a3412">${mP} permission${mP>1?'s':''}</span>`:'';
+  document.getElementById('calMonthSummary').innerHTML=chips+halfChip+offChip+holChip+permChip||'<span style="font-size:12px;color:#bbb">No records this month</span>';
+
   let html=DAY_SHORT.map(d=>`<div class="cal-day-name">${d}</div>`).join('');
   for(let i=0;i<fd;i++)html+=`<div class="cal-cell empty"></div>`;
   for(let d=1;d<=dim;d++){
     const ds=`${calY}-${String(calM+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-    const lt=lm[ds]||'';
+    const lv=lm[ds];
     const dow=new Date(ds).getDay();
-    const isOff=offday!==null&&dow===offday&&!lt;
-    const isH=!lt&&!isOff&&isMerc(ds);
+    const isOff=offday!==null&&dow===offday&&!lv;
+    const isH=!lv&&!isOff&&isMerc(ds);
+    const hasPerm=!!pm[ds];
     const isToday=ds===today;
     let cls='cal-cell';
-    if(lt)cls+=` leave-${lt}`;
+    if(lv){cls+=lv.half?` leave-half`:` leave-${lv.type}`;}
     else if(isOff)cls+=' offday';
     else if(isH)cls+=' mercantile';
     else if(dow===0||dow===6)cls+=' weekend';
+    if(hasPerm)cls+=' has-perm';
     if(isToday)cls+=' today';
-    const title=isH?` title="${MERC[ds]}"`:lt?` title="${lt} leave"`:'';
-    const sub=lt?`<div class="cal-cell-sub">${lt.slice(0,2)}</div>`:isOff?`<div class="cal-cell-sub">off</div>`:isH?`<div class="cal-cell-sub">hol</div>`:'';
-    html+=`<div class="${cls}"${title} onclick="calClick('${ds}')">${d}${sub}</div>`;
+    const tipLv=lv?(lv.half?`${lv.half} half ${lv.type}`:`${lv.type} leave`):'';
+    const tipM=isH?MERC[ds]:'';
+    const tipP=hasPerm?'Permission: '+pm[ds].reason:'';
+    const title=[tipLv,tipM,tipP].filter(Boolean).join(' | ');
+    const sub=lv?(lv.half?`<div class="cal-cell-sub">${lv.half==='first'?'1st':'2nd'}</div>`:`<div class="cal-cell-sub">${lv.type.slice(0,2)}</div>`):
+      isOff?`<div class="cal-cell-sub">off</div>`:isH?`<div class="cal-cell-sub">hol</div>`:'';
+    html+=`<div class="${cls}"${title?` title="${title}"`:''}  onclick="calClick('${ds}')">${d}${sub}</div>`;
   }
   document.getElementById('calGrid').innerHTML=html;
+
+  // Permissions list this month
+  const monthPerms=permissions.filter(p=>{
+    if(p.empId!==e.id)return false;
+    const f=new Date(p.date);
+    return f.getFullYear()===calY&&f.getMonth()===calM;
+  }).sort((a,b)=>a.date.localeCompare(b.date));
+
+  const permListEl=document.getElementById('calPermList');
+  const permItemsEl=document.getElementById('calPermItems');
+  if(monthPerms.length>0){
+    permListEl.style.display='block';
+    permItemsEl.innerHTML=monthPerms.map(p=>`
+      <div class="perm-item">
+        <div class="perm-item-date">${fmt(p.date)}</div>
+        <div class="perm-item-times">${[p.timeIn,p.timeOut].filter(Boolean).join(' → ')||'—'}</div>
+        <div class="perm-item-reason">${p.reason||'—'}</div>
+        <button class="btn xs" onclick="openPermModal(${p.id})">Edit</button>
+        <button class="btn xs danger" onclick="deletePermission(${p.id})">Del</button>
+      </div>`).join('');
+  } else {
+    permListEl.style.display='block';
+    permItemsEl.innerHTML='<div style="font-size:12px;color:#bbb;padding:4px 0">No permissions this month</div>';
+  }
 }
 
 function renderAll(){renderStats();renderEmployees();renderCalendar();}
@@ -605,6 +719,10 @@ function calClick(ds){
 }
 
 // ── Leave modal ───────────────────────────────────────────────
+function toggleHalfDay(){
+  const isHalf=false; // half day available for all types
+  updateLeaveSummary();
+}
 function openLeaveModal(lvId){
   editingLvId=lvId;
   const sel=document.getElementById('lv_emp');
@@ -613,12 +731,14 @@ function openLeaveModal(lvId){
     const l=leaves.find(x=>x.id===lvId);
     document.getElementById('leaveModalTitle').textContent='Edit leave';
     sel.value=l.empId;document.getElementById('lv_type').value=l.type;
+    document.getElementById('lv_half').value=l.half||'';
     document.getElementById('lv_from').value=l.from;document.getElementById('lv_to').value=l.to;
     document.getElementById('lv_note').value=l.note||'';
   } else {
     document.getElementById('leaveModalTitle').textContent='Log leave';
     if(selectedEmpId)sel.value=selectedEmpId;
     ['lv_from','lv_to','lv_note'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('lv_half').value='';
   }
   document.getElementById('lv_err').style.display='none';
   document.getElementById('leaveModal').classList.add('open');
@@ -629,23 +749,31 @@ function updateLeaveSummary(){
   const from=document.getElementById('lv_from').value;
   const to=document.getElementById('lv_to').value;
   const empId=parseInt(document.getElementById('lv_emp').value);
+  const half=document.getElementById('lv_half').value;
   const el=document.getElementById('lv_summary');
   if(!from||!to||from>to){el.style.display='none';return;}
   const emp=employees.find(e=>e.id===empId);
   const days=range(from,to);
   const offD=emp&&emp.offday!==''&&emp.offday!==undefined?days.filter(d=>new Date(d).getDay()===parseInt(emp.offday)).length:0;
   const mercD=days.filter(d=>isMerc(d)).length;
-  let txt=`${days.length} calendar day${days.length!==1?'s':''}`;
+  let calDays=days.length;
+  let workDays=calDays-offD;
+  let leaveDays=half?0.5:workDays;
+  let txt=half?`Half day (${half} half) — 0.5 leave day`:
+    `${calDays} calendar day${calDays!==1?'s':''}`;
   const notes=[];
-  if(offD>0)notes.push(`${offD} weekly off day${offD!==1?'s':''}`);
-  if(mercD>0)notes.push(`${mercD} mercantile holiday${mercD!==1?'s':''}`);
-  if(notes.length)txt+=` — includes ${notes.join(' and ')}`;
-  if(offD>0){const wd=days.length-offD;txt+=` — ${wd} working day${wd!==1?'s':''} of leave`;}
+  if(!half){
+    if(offD>0)notes.push(`${offD} weekly off`);
+    if(mercD>0)notes.push(`${mercD} mercantile holiday${mercD>1?'s':''}`);
+    if(notes.length)txt+=` — includes ${notes.join(' & ')}`;
+    if(offD>0)txt+=` — ${workDays} working day${workDays!==1?'s':''} of leave`;
+  }
   el.textContent=txt;el.style.display='block';
 }
 async function saveLeave(){
   const empId=parseInt(document.getElementById('lv_emp').value);
   const type=document.getElementById('lv_type').value;
+  const half=document.getElementById('lv_half').value;
   const from=document.getElementById('lv_from').value;
   const to=document.getElementById('lv_to').value;
   const note=document.getElementById('lv_note').value;
@@ -653,41 +781,118 @@ async function saveLeave(){
   if(!from||!to){err.style.display='block';err.textContent='Please select both dates.';return;}
   if(from>to){err.style.display='block';err.textContent='"From" must be before "To".';return;}
   err.style.display='none';
-  const btn=document.getElementById('saveLvBtn');
-  btn.disabled=true;
+  const btn=document.getElementById('saveLvBtn');btn.disabled=true;
   spinner(true,'Saving leave…');
-  try {
-    const data={empId,type,from,to,note};
+  try{
+    const data={empId,type,half,from,to,note};
     if(editingLvId)data.id=editingLvId;
     const res=await apiPost({action:'saveLeave',data});
-    if(!editingLvId){
-      leaves.push({id:res.id,empId,type,from,to,note});
-      nextLvId=res.id+1;
-    } else {
-      const l=leaves.find(x=>x.id===editingLvId);
-      if(l){l.empId=empId;l.type=type;l.from=from;l.to=to;l.note=note;}
-    }
+    if(!editingLvId){leaves.push({id:res.id,empId,type,half,from,to,note});nextLvId=res.id+1;}
+    else{const l=leaves.find(x=>x.id===editingLvId);if(l){l.empId=empId;l.type=type;l.half=half;l.from=from;l.to=to;l.note=note;}}
     closeLeaveModal();renderAll();if(activeTab==='report')renderReport();
     showToast(editingLvId?'Leave updated':'Leave saved');
-  } catch(e){showToast('Save failed: '+e.message,true);}
+  }catch(e){showToast('Save failed: '+e.message,true);}
   finally{btn.disabled=false;spinner(false);}
 }
 async function deleteLeave(id){
   showConfirm('Remove this leave entry?','This cannot be undone.',async()=>{
     spinner(true,'Removing…');
-    try{
-      await apiPost({action:'deleteLeave',id});
-      leaves=leaves.filter(l=>l.id!==id);
-      renderAll();renderReport();showToast('Leave removed');
-    }catch(e){showToast('Error: '+e.message,true);}
-    finally{spinner(false);}
+    try{await apiPost({action:'deleteLeave',id});leaves=leaves.filter(l=>l.id!==id);renderAll();renderReport();showToast('Leave removed');}
+    catch(e){showToast('Error: '+e.message,true);}finally{spinner(false);}
   });
+}
+
+// ── Permission modal ──────────────────────────────────────────
+function openPermModal(pmId){
+  editingPermId=pmId;
+  const sel=document.getElementById('pm_emp');
+  sel.innerHTML=employees.map(e=>`<option value="${e.id}">${e.name} (${e.code})</option>`).join('');
+  if(pmId){
+    const p=permissions.find(x=>x.id===pmId);
+    document.getElementById('permModalTitle').textContent='Edit permission';
+    sel.value=p.empId;
+    document.getElementById('pm_date').value=p.date;
+    document.getElementById('pm_timein').value=p.timeIn||'';
+    document.getElementById('pm_timeout').value=p.timeOut||'';
+    document.getElementById('pm_reason').value=p.reason||'';
+  } else {
+    document.getElementById('permModalTitle').textContent='Log permission';
+    if(selectedEmpId)sel.value=selectedEmpId;
+    ['pm_date','pm_timein','pm_timeout','pm_reason'].forEach(id=>document.getElementById(id).value='');
+  }
+  document.getElementById('pm_err').style.display='none';
+  document.getElementById('permModal').classList.add('open');
+}
+function closePermModal(){document.getElementById('permModal').classList.remove('open');editingPermId=null;}
+async function savePermission(){
+  const empId=parseInt(document.getElementById('pm_emp').value);
+  const date=document.getElementById('pm_date').value;
+  const timeIn=document.getElementById('pm_timein').value;
+  const timeOut=document.getElementById('pm_timeout').value;
+  const reason=document.getElementById('pm_reason').value;
+  const err=document.getElementById('pm_err');
+  if(!date){err.style.display='block';err.textContent='Please select a date.';return;}
+  err.style.display='none';
+  const btn=document.getElementById('savePermBtn');btn.disabled=true;
+  spinner(true,'Saving…');
+  try{
+    const data={empId,date,timeIn,timeOut,reason};
+    if(editingPermId)data.id=editingPermId;
+    const res=await apiPost({action:'savePermission',data});
+    if(!editingPermId){permissions.push({id:res.id,empId,date,timeIn,timeOut,reason});nextPermId=res.id+1;}
+    else{const p=permissions.find(x=>x.id===editingPermId);if(p){p.empId=empId;p.date=date;p.timeIn=timeIn;p.timeOut=timeOut;p.reason=reason;}}
+    closePermModal();renderAll();if(activeTab==='permissions')renderPermReport();
+    showToast(editingPermId?'Permission updated':'Permission saved');
+  }catch(e){showToast('Save failed: '+e.message,true);}
+  finally{btn.disabled=false;spinner(false);}
+}
+async function deletePermission(id){
+  showConfirm('Remove this permission?','This cannot be undone.',async()=>{
+    spinner(true,'Removing…');
+    try{await apiPost({action:'deletePermission',id});permissions=permissions.filter(p=>p.id!==id);renderAll();renderPermReport();showToast('Permission removed');}
+    catch(e){showToast('Error: '+e.message,true);}finally{spinner(false);}
+  });
+}
+
+function renderPermReport(){
+  const empSel=document.getElementById('prpt_emp');
+  const curE=empSel.value;
+  empSel.innerHTML='<option value="">All employees</option>'+employees.map(e=>`<option value="${e.id}"${String(e.id)===curE?' selected':''}>${e.name}</option>`).join('');
+  const yrSel=document.getElementById('prpt_year');
+  const yrs=[...new Set(permissions.map(p=>p.date.slice(0,4)))].sort().reverse();
+  if(!yrs.includes(String(new Date().getFullYear())))yrs.unshift(String(new Date().getFullYear()));
+  const curY=yrSel.value||String(new Date().getFullYear());
+  yrSel.innerHTML='<option value="">All years</option>'+yrs.map(y=>`<option${y===curY?' selected':''}>${y}</option>`).join('');
+  const empId=empSel.value?parseInt(empSel.value):null;
+  const year=document.getElementById('prpt_year').value;
+  const month=document.getElementById('prpt_month').value;
+  let fil=permissions.filter(p=>{
+    if(empId&&p.empId!==empId)return false;
+    if(year&&!p.date.startsWith(year))return false;
+    if(month!==''&&new Date(p.date).getMonth()!==parseInt(month))return false;
+    return true;
+  }).sort((a,b)=>b.date.localeCompare(a.date));
+  const body=document.getElementById('permReportBody');
+  if(!fil.length){body.innerHTML=`<tr><td colspan="7" style="text-align:center;padding:2rem;color:#aaa">No permissions found</td></tr>`;document.getElementById('permReportSummary').textContent='';return;}
+  body.innerHTML=fil.map(p=>{
+    const e=employees.find(x=>x.id===p.empId)||{name:'Unknown',code:'-'};
+    return `<tr>
+      <td><strong>${e.name}</strong></td><td style="color:#888">${e.code}</td>
+      <td>${fmt(p.date)}</td>
+      <td>${p.timeIn||'—'}</td><td>${p.timeOut||'—'}</td>
+      <td style="color:#888">${p.reason||'—'}</td>
+      <td style="white-space:nowrap">
+        <button class="btn xs" onclick="openPermModal(${p.id})">Edit</button>
+        <button class="btn xs danger" onclick="deletePermission(${p.id})" style="margin-left:4px">Del</button>
+      </td>
+    </tr>`;
+  }).join('');
+  document.getElementById('permReportSummary').textContent=`${fil.length} permission${fil.length!==1?'s':''}`;
 }
 
 // ── Employee modal ────────────────────────────────────────────
 function openEmpModal(id){
-  editingEmpId=id;
-  const isEdit=!!id;
+  editingEmpId=id;const isEdit=!!id;
   document.getElementById('empModalTitle').textContent=isEdit?'Edit employee':'Add employee';
   document.getElementById('empSaveBtn').textContent=isEdit?'Save changes':'Add employee';
   document.getElementById('empDeleteBtn').style.display=isEdit?'':'none';
@@ -697,10 +902,12 @@ function openEmpModal(id){
     const e=employees.find(x=>x.id===id);
     document.getElementById('em_name').value=e.name;
     document.getElementById('em_code').value=e.code;
+    document.getElementById('em_type').value=e.empType||'full-time';
     sel.value=e.dept;
     document.getElementById('em_offday').value=e.offday!==undefined&&e.offday!==''?e.offday:'';
   } else {
     ['em_name','em_code'].forEach(i=>document.getElementById(i).value='');
+    document.getElementById('em_type').value='full-time';
     document.getElementById('em_offday').value='';
   }
   document.getElementById('em_err').style.display='none';
@@ -711,6 +918,7 @@ async function saveEmployee(){
   const name=document.getElementById('em_name').value.trim();
   const code=document.getElementById('em_code').value.trim();
   const dept=document.getElementById('em_dept').value;
+  const empType=document.getElementById('em_type').value;
   const offday=document.getElementById('em_offday').value;
   const err=document.getElementById('em_err');
   if(!name||!code){err.style.display='block';err.textContent='Name and code are required.';return;}
@@ -718,37 +926,29 @@ async function saveEmployee(){
     err.style.display='block';err.textContent='Employee code already exists.';return;
   }
   err.style.display='none';
-  const btn=document.getElementById('empSaveBtn');
-  btn.disabled=true;
+  const btn=document.getElementById('empSaveBtn');btn.disabled=true;
   spinner(true,'Saving employee…');
   try{
-    const data={name,code,dept,offday:offday===''?'':parseInt(offday)};
+    const data={name,code,dept,empType,offday:offday===''?'':parseInt(offday)};
     if(editingEmpId)data.id=editingEmpId;
     const res=await apiPost({action:'saveEmployee',data});
-    if(editingEmpId){
-      const e=employees.find(x=>x.id===editingEmpId);
-      e.name=name;e.code=code;e.dept=dept;e.offday=offday===''?'':parseInt(offday);
-      showToast('Employee updated');
-    } else {
-      employees.push({id:res.id,name,code,dept,offday:offday===''?'':parseInt(offday)});
-      nextEmpId=res.id+1;
-      showToast('Employee added');
-    }
+    if(editingEmpId){const e=employees.find(x=>x.id===editingEmpId);e.name=name;e.code=code;e.dept=dept;e.empType=empType;e.offday=offday===''?'':parseInt(offday);showToast('Employee updated');}
+    else{employees.push({id:res.id,name,code,dept,empType,offday:offday===''?'':parseInt(offday)});nextEmpId=res.id+1;showToast('Employee added');}
     closeEmpModal();renderAll();
   }catch(e){showToast('Save failed: '+e.message,true);}
   finally{btn.disabled=false;spinner(false);}
 }
 async function deleteEmployee(){
-  showConfirm('Remove this employee?','All their leave records will also be removed. This cannot be undone.',async()=>{
+  showConfirm('Remove this employee?','All their leave and permission records will also be removed.',async()=>{
     spinner(true,'Removing…');
     try{
       await apiPost({action:'deleteEmployee',id:editingEmpId});
       leaves=leaves.filter(l=>l.empId!==editingEmpId);
+      permissions=permissions.filter(p=>p.empId!==editingEmpId);
       employees=employees.filter(e=>e.id!==editingEmpId);
       if(selectedEmpId===editingEmpId)selectedEmpId=null;
       closeEmpModal();renderAll();showToast('Employee removed');
-    }catch(e){showToast('Error: '+e.message,true);}
-    finally{spinner(false);}
+    }catch(e){showToast('Error: '+e.message,true);}finally{spinner(false);}
   });
 }
 
@@ -759,16 +959,12 @@ function renderDepts(){
   list.innerHTML=departments.map(d=>{
     const c=employees.filter(e=>e.dept===d).length;
     return `<div class="dept-item">
-      <div><div class="dept-name">${d}</div><div class="dept-count">${c} employee${c!==1?'s':''}</div></div>
+      <div><div style="font-size:14px;font-weight:500">${d}</div><div style="font-size:12px;color:#999">${c} employee${c!==1?'s':''}</div></div>
       <button class="btn xs danger" onclick="removeDept('${d.replace(/'/g,"\\'")}')">Remove</button>
     </div>`;
   }).join('');
 }
-function openDeptModal(){
-  document.getElementById('dept_name').value='';
-  document.getElementById('dept_err').style.display='none';
-  document.getElementById('deptModal').classList.add('open');
-}
+function openDeptModal(){document.getElementById('dept_name').value='';document.getElementById('dept_err').style.display='none';document.getElementById('deptModal').classList.add('open');}
 function closeDeptModal(){document.getElementById('deptModal').classList.remove('open');}
 async function saveDept(){
   const name=document.getElementById('dept_name').value.trim();
@@ -776,22 +972,15 @@ async function saveDept(){
   if(!name){err.style.display='block';err.textContent='Please enter a name.';return;}
   if(departments.includes(name)){err.style.display='block';err.textContent='Already exists.';return;}
   spinner(true,'Saving…');
-  try{
-    await apiPost({action:'saveDept',name});
-    departments.push(name);closeDeptModal();renderDepts();populateDeptFilter();showToast('Department added');
-  }catch(e){showToast('Error: '+e.message,true);}
-  finally{spinner(false);}
+  try{await apiPost({action:'saveDept',name});departments.push(name);closeDeptModal();renderDepts();populateDeptFilter();showToast('Department added');}
+  catch(e){showToast('Error: '+e.message,true);}finally{spinner(false);}
 }
 async function removeDept(d){
   const c=employees.filter(e=>e.dept===d).length;
   showConfirm(`Remove "${d}"?`,c>0?`${c} employee${c!==1?'s':''} are in this department.`:'No employees in this department.',async()=>{
     spinner(true,'Removing…');
-    try{
-      await apiPost({action:'deleteDept',name:d});
-      departments=departments.filter(x=>x!==d);
-      renderDepts();populateDeptFilter();showToast('Department removed');
-    }catch(e){showToast('Error: '+e.message,true);}
-    finally{spinner(false);}
+    try{await apiPost({action:'deleteDept',name:d});departments=departments.filter(x=>x!==d);renderDepts();populateDeptFilter();showToast('Department removed');}
+    catch(e){showToast('Error: '+e.message,true);}finally{spinner(false);}
   });
 }
 
@@ -819,31 +1008,41 @@ function renderReport(){
   const body=document.getElementById('reportBody');
   if(!fil.length){body.innerHTML=`<tr><td colspan="9" style="text-align:center;padding:2rem;color:#aaa">No records found</td></tr>`;document.getElementById('reportSummary').textContent='';return;}
   body.innerHTML=fil.map(l=>{
-    const e=employees.find(x=>x.id===l.empId)||{name:'Unknown',code:'-',dept:'-'};
-    const d=range(l.from,l.to).length;
+    const e=employees.find(x=>x.id===l.empId)||{name:'Unknown',code:'-',dept:'-',empType:'-'};
+    const d=l.half?0.5:range(l.from,l.to).length;
+    const halfLabel=l.half?`<span class="pill halfday" style="font-size:10px">${l.half}</span>`:'—';
     return `<tr>
-      <td><strong style="font-size:13px">${e.name}</strong></td>
-      <td style="color:#888">${e.code}</td><td style="color:#888">${e.dept}</td>
+      <td><strong>${e.name}</strong></td>
+      <td><span class="badge ${e.empType==='part-time'?'parttime':'fulltime'}">${e.empType||'—'}</span></td>
       <td><span class="pill ${l.type}">${l.type}</span></td>
+      <td>${halfLabel}</td>
       <td>${fmt(l.from)}</td><td>${fmt(l.to)}</td>
       <td><strong>${d}d</strong></td>
-      <td style="color:#888;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${l.note||'—'}</td>
+      <td style="color:#888;max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${l.note||'—'}</td>
       <td style="white-space:nowrap">
         <button class="btn xs" onclick="openLeaveModal(${l.id})">Edit</button>
         <button class="btn xs danger" onclick="deleteLeave(${l.id})" style="margin-left:4px">Del</button>
       </td>
     </tr>`;
   }).join('');
-  const tot=fil.reduce((s,l)=>s+range(l.from,l.to).length,0);
+  const tot=fil.reduce((s,l)=>s+(l.half?0.5:range(l.from,l.to).length),0);
   document.getElementById('reportSummary').textContent=`${fil.length} record${fil.length!==1?'s':''} · ${tot} total day${tot!==1?'s':''}`;
 }
 
 // ── CSV Export ────────────────────────────────────────────────
 function exportCSV(){
-  const rows=[['Employee','Code','Department','Leave Type','From','To','Days','Note']];
+  const rows=[['Employee','Code','Department','Emp Type','Leave Type','Half Day','From','To','Days','Note']];
   leaves.sort((a,b)=>a.from.localeCompare(b.from)).forEach(l=>{
-    const e=employees.find(x=>x.id===l.empId)||{name:'Unknown',code:'-',dept:'-'};
-    rows.push([e.name,e.code,e.dept,l.type,fmt(l.from),fmt(l.to),range(l.from,l.to).length,l.note||'']);
+    const e=employees.find(x=>x.id===l.empId)||{name:'Unknown',code:'-',dept:'-',empType:'-'};
+    const d=l.half?0.5:range(l.from,l.to).length;
+    rows.push([e.name,e.code,e.dept,e.empType||'full-time',l.type,l.half||'full',fmt(l.from),fmt(l.to),d,l.note||'']);
+  });
+  rows.push([]);
+  rows.push(['--- PERMISSIONS ---']);
+  rows.push(['Employee','Code','Date','Time In','Time Out','Reason']);
+  permissions.sort((a,b)=>a.date.localeCompare(b.date)).forEach(p=>{
+    const e=employees.find(x=>x.id===p.empId)||{name:'Unknown',code:'-'};
+    rows.push([e.name,e.code,fmt(p.date),p.timeIn||'',p.timeOut||'',p.reason||'']);
   });
   const csv=rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
   const a=document.createElement('a');
@@ -852,7 +1051,7 @@ function exportCSV(){
   a.click();showToast('CSV downloaded');
 }
 
-// ── Confirm dialog ────────────────────────────────────────────
+// ── Confirm ───────────────────────────────────────────────────
 function showConfirm(title,msg,cb){
   confirmCb=cb;
   document.getElementById('confirmTitle').textContent=title;
@@ -862,13 +1061,12 @@ function showConfirm(title,msg,cb){
 function closeConfirm(){document.getElementById('confirmModal').classList.remove('open');confirmCb=null;}
 document.getElementById('confirmOkBtn').onclick=function(){if(confirmCb)confirmCb();closeConfirm();};
 
-// Backdrop close
-[['leaveModal',()=>closeLeaveModal()],['empModal',()=>closeEmpModal()],
- ['deptModal',()=>closeDeptModal()],['confirmModal',()=>closeConfirm()]].forEach(([id,fn])=>{
+[['leaveModal',()=>closeLeaveModal()],['permModal',()=>closePermModal()],
+ ['empModal',()=>closeEmpModal()],['deptModal',()=>closeDeptModal()],
+ ['confirmModal',()=>closeConfirm()]].forEach(([id,fn])=>{
   document.getElementById(id).addEventListener('click',function(e){if(e.target===this)fn();});
 });
 
-// ── Init ──────────────────────────────────────────────────────
 loadAll();
 </script>
 </body>
