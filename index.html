@@ -484,9 +484,17 @@ async function loadAll(){
   }finally{spinner(false);}
 }
 
+// Parse YYYY-MM-DD as local date (avoids UTC midnight timezone shift)
+function parseLocal(ds){
+  const p=ds.split('-').map(Number);
+  return new Date(p[0],p[1]-1,p[2]);
+}
+function toYMD(dt){
+  return dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0')+'-'+String(dt.getDate()).padStart(2,'0');
+}
 function range(from,to){
-  const d=[],cur=new Date(from),end=new Date(to);
-  while(cur<=end){d.push(cur.toISOString().slice(0,10));cur.setDate(cur.getDate()+1);}
+  const d=[],cur=parseLocal(from),end=parseLocal(to);
+  while(cur<=end){d.push(toYMD(cur));cur.setDate(cur.getDate()+1);}
   return d;
 }
 function leavemap(empId){
@@ -521,13 +529,13 @@ function renderStats(){
   leaves.forEach(l=>{if(range(l.from,l.to).includes(today))onLeave.add(l.empId);});
   const tm=new Date(),ty=tm.getFullYear(),tmo=tm.getMonth();
   const md=leaves.reduce((s,l)=>{
-    const f=new Date(l.from);
+    const f=parseLocal(l.from);
     return f.getFullYear()===ty&&f.getMonth()===tmo?s+(l.half?0.5:range(l.from,l.to).length):s;
   },0);
   const ft=employees.filter(e=>e.empType==='full-time'||!e.empType).length;
   const pt=employees.filter(e=>e.empType==='part-time').length;
   const thisMonthPerms=permissions.filter(p=>{
-    const f=new Date(p.date);return f.getFullYear()===ty&&f.getMonth()===tmo;
+    const f=parseLocal(p.date);return f.getFullYear()===ty&&f.getMonth()===tmo;
   }).length;
   document.getElementById('stats').innerHTML=`
     <div class="stat"><div class="stat-label">Full-time</div><div class="stat-val">${ft}</div></div>
@@ -568,7 +576,7 @@ function renderEmployees(){
     const tb=`<span class="badge ${e.empType==='part-time'?'parttime':'fulltime'}">${e.empType==='part-time'?'Part-time':'Full-time'}</span>`;
     const last7=[];for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);last7.push(d.toISOString().slice(0,10));}
     const dots=last7.map(d=>{
-      const lv=lm[d];const dow=new Date(d).getDay();
+      const lv=lm[d];const dow=parseLocal(d).getDay();
       const isOff=e.offday!==''&&e.offday!==undefined&&dow===parseInt(e.offday);
       const hasPerm=!!pm[d];
       const bg=lv?'#fca5a5':isMerc(d)?'#fcd34d':isOff?'#c4b5fd':hasPerm?'#fed7aa':'#e8e8e6';
@@ -607,7 +615,7 @@ function renderCalendar(){
   let mL={annual:0,sick:0,casual:0,unpaid:0},mHalf=0,mO=0,mH=0,mP=0;
   for(let d=1;d<=dim;d++){
     const ds=`${calY}-${String(calM+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-    const dow=new Date(ds).getDay();
+    const dow=parseLocal(ds).getDay();
     const lv=lm[ds];
     if(lv){if(lv.half)mHalf+=0.5;else mL[lv.type]=(mL[lv.type]||0)+1;}
     else if(offday!==null&&dow===offday)mO++;
@@ -626,7 +634,7 @@ function renderCalendar(){
   for(let d=1;d<=dim;d++){
     const ds=`${calY}-${String(calM+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
     const lv=lm[ds];
-    const dow=new Date(ds).getDay();
+    const dow=parseLocal(ds).getDay();
     const isOff=offday!==null&&dow===offday&&!lv;
     const isH=!lv&&!isOff&&isMerc(ds);
     const hasPerm=!!pm[ds];
@@ -652,7 +660,7 @@ function renderCalendar(){
   // Permissions list
   const monthPerms=permissions.filter(p=>{
     if(p.empId!==e.id)return false;
-    const f=new Date(p.date);
+    const f=parseLocal(p.date);
     return f.getFullYear()===calY&&f.getMonth()===calM;
   }).sort((a,b)=>a.date.localeCompare(b.date));
   const permListEl=document.getElementById('calPermList');
@@ -683,7 +691,7 @@ function selectEmployee(id){
 function shiftMonth(d){calM+=d;if(calM<0){calM=11;calY--;}if(calM>11){calM=0;calY++;}renderCalendar();}
 function calClick(ds){
   const e=employees.find(x=>x.id===selectedEmpId);
-  if(e&&e.offday!==''&&e.offday!==undefined&&new Date(ds).getDay()===parseInt(e.offday))return;
+  if(e&&e.offday!==''&&e.offday!==undefined&&parseLocal(ds).getDay()===parseInt(e.offday))return;
   openLeaveModal(null);
   if(selectedEmpId)document.getElementById('lv_emp').value=selectedEmpId;
   document.getElementById('lv_from').value=ds;
@@ -723,7 +731,7 @@ function updateLeaveSummary(){
   if(!from||!to||from>to){el.style.display='none';return;}
   const emp=employees.find(e=>e.id===empId);
   const days=range(from,to);
-  const offD=emp&&emp.offday!==''&&emp.offday!==undefined?days.filter(d=>new Date(d).getDay()===parseInt(emp.offday)).length:0;
+  const offD=emp&&emp.offday!==''&&emp.offday!==undefined?days.filter(d=>parseLocal(d).getDay()===parseInt(emp.offday)).length:0;
   const mercD=days.filter(d=>isMerc(d)).length;
   let txt=half?`Half day (${half} half) — 0.5 leave day`:
     `${days.length} calendar day${days.length!==1?'s':''}`;
@@ -855,7 +863,7 @@ function renderPermReport(){
     if(!p.date)return false;
     if(empId&&p.empId!==empId)return false;
     if(year&&!p.date.startsWith(year))return false;
-    if(month!==''&&new Date(p.date).getMonth()!==parseInt(month))return false;
+    if(month!==''&&parseLocal(p.date).getMonth()!==parseInt(month))return false;
     return true;
   }).sort((a,b)=>b.date.localeCompare(a.date));
   const body=document.getElementById('permReportBody');
@@ -993,7 +1001,7 @@ function renderReport(){
     if(empId&&l.empId!==empId)return false;
     if(type&&l.type!==type)return false;
     if(year&&!l.from.startsWith(year))return false;
-    if(month!==''&&new Date(l.from).getMonth()!==parseInt(month))return false;
+    if(month!==''&&parseLocal(l.from).getMonth()!==parseInt(month))return false;
     return true;
   }).sort((a,b)=>b.from.localeCompare(a.from));
   const body=document.getElementById('reportBody');
