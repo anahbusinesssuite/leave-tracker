@@ -1,1069 +1,911 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Leave Tracker</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<title>AN Business Suite</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:system-ui,-apple-system,sans-serif;background:#f5f5f3;color:#1a1a1a;min-height:100vh;padding:1rem}
-.app{max-width:980px;margin:0 auto}
-.app-header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:1.25rem}
-.app-title{font-size:20px;font-weight:700;color:#111}
-.app-subtitle{font-size:12px;color:#999;margin-top:2px}
-.tabs{display:flex;gap:4px;background:#e8e8e6;border-radius:10px;padding:4px;margin-bottom:1.25rem;flex-wrap:wrap}
-.tab{padding:6px 14px;border-radius:7px;font-size:13px;font-weight:500;cursor:pointer;border:none;background:transparent;color:#666;transition:all .15s;font-family:inherit}
-.tab.active{background:#fff;color:#111;box-shadow:0 1px 3px rgba(0,0,0,.1)}
-input[type=text],input[type=date],input[type=time],select,textarea{height:38px;padding:0 12px;border-radius:8px;border:1px solid #ddd;background:#fff;color:#1a1a1a;font-size:14px;font-family:inherit;outline:none;transition:border-color .15s}
-input[type=text]:focus,input[type=date]:focus,input[type=time]:focus,select:focus,textarea:focus{border-color:#185FA5}
-textarea{height:60px;padding:8px 12px;resize:vertical}
-.btn{height:38px;padding:0 16px;border-radius:8px;border:1px solid #ddd;background:#fff;color:#1a1a1a;font-size:13px;font-family:inherit;cursor:pointer;white-space:nowrap;transition:all .12s;display:inline-flex;align-items:center;gap:5px}
-.btn:hover{background:#f0f0ee;border-color:#bbb}
-.btn:active{transform:scale(.98)}
-.btn.primary{background:#185FA5;color:#fff;border-color:#185FA5}
-.btn.primary:hover{background:#0C447C}
-.btn.danger{background:#fff0f0;color:#c0392b;border-color:#f5c6c6}
-.btn.danger:hover{background:#fee2e2}
-.btn.success{background:#f0fdf4;color:#166534;border-color:#bbf7d0}
-.btn.success:hover{background:#dcfce7}
-.btn.amber{background:#fffbeb;color:#92400e;border-color:#fde68a}
-.btn.amber:hover{background:#fef3c7}
-.btn.sm{height:30px;padding:0 10px;font-size:12px}
-.btn.xs{height:26px;padding:0 8px;font-size:11px}
-.btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(105px,1fr));gap:10px;margin-bottom:1.25rem}
-.stat{background:#fff;border-radius:10px;border:1px solid #e8e8e6;padding:.75rem 1rem}
-.stat-label{font-size:11px;color:#888;margin-bottom:4px}
-.stat-val{font-size:19px;font-weight:700;color:#111}
-.topbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:1.25rem}
-.search-wrap{position:relative;flex:1;min-width:150px}
-.search-wrap input{width:100%;padding-left:32px}
-.search-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:15px;color:#888;pointer-events:none}
-.emp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(295px,1fr));gap:12px;margin-bottom:1.5rem}
-.emp-card{background:#fff;border:1px solid #e8e8e6;border-radius:12px;padding:1rem 1.2rem;cursor:pointer;transition:border-color .15s,box-shadow .15s}
-.emp-card:hover{border-color:#aac8e8;box-shadow:0 2px 8px rgba(24,95,165,.08)}
-.emp-card.active{border-color:#185FA5;border-width:1.5px;box-shadow:0 2px 12px rgba(24,95,165,.12)}
-.emp-head{display:flex;align-items:center;gap:10px;margin-bottom:10px}
-.avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0}
-.emp-name{font-weight:600;font-size:14px;line-height:1.3}
-.emp-meta{font-size:12px;color:#888;margin-top:2px;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
-.badge{display:inline-flex;align-items:center;font-size:10px;padding:1px 6px;border-radius:20px;font-weight:600;text-transform:uppercase;letter-spacing:.3px}
-.badge.fulltime{background:#dbeafe;color:#1e40af}
-.badge.parttime{background:#fef9c3;color:#854d0e}
-.leave-pills{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px}
-.pill{font-size:11px;padding:2px 8px;border-radius:20px;font-weight:500}
-/* All leave pills unified red */
-.pill.annual{background:#fee2e2;color:#991b1b}
-.pill.sick{background:#fee2e2;color:#991b1b}
-.pill.casual{background:#fee2e2;color:#991b1b}
-.pill.unpaid{background:#fecaca;color:#7f1d1d}
-.pill.halfday{background:#fecaca;color:#991b1b}
-.pill.perm{background:#fff7ed;color:#9a3412}
-.offday-badge{display:inline-flex;align-items:center;font-size:11px;padding:1px 7px;border-radius:20px;background:#ede9fe;color:#5b21b6;font-weight:500}
-.mini-bar{display:flex;gap:3px}
-.mini-dot{width:9px;height:9px;border-radius:2px;flex-shrink:0}
-
-/* Calendar */
-.cal-section{background:#fff;border:1px solid #e8e8e6;border-radius:12px;padding:1.25rem;margin-bottom:1.25rem}
-.cal-header{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:.75rem}
-.cal-title{font-size:15px;font-weight:700}
-.cal-sub{font-size:12px;color:#888;margin-top:3px}
-.cal-nav{display:flex;gap:6px;align-items:center}
-.cal-nav span{font-size:14px;font-weight:500;min-width:130px;text-align:center}
-.cal-month-summary{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:.75rem;min-height:24px}
-.ms-chip{font-size:11px;padding:2px 9px;border-radius:20px;font-weight:500}
-.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
-.cal-day-name{text-align:center;font-size:11px;color:#999;padding:4px 0;font-weight:500}
-.cal-cell{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:7px;font-size:12px;cursor:pointer;border:1.5px solid transparent;transition:background .1s;position:relative}
-.cal-cell:hover:not(.empty){background:#f0f0ee}
-.cal-cell.empty{cursor:default}
-.cal-cell.today{border-color:#185FA5!important}
-/* ALL leave types = red */
-.cal-cell.leave-annual{background:#fee2e2;color:#991b1b;font-weight:600}
-.cal-cell.leave-sick{background:#fee2e2;color:#991b1b;font-weight:600}
-.cal-cell.leave-casual{background:#fee2e2;color:#991b1b;font-weight:600}
-.cal-cell.leave-unpaid{background:#fecaca;color:#7f1d1d;font-weight:600}
-.cal-cell.leave-half{background:#fecaca;color:#991b1b;font-weight:600}
-/* Weekly off = purple */
-.cal-cell.offday{background:#ede9fe;color:#5b21b6;font-weight:600}
-/* Mercantile = orange */
-.cal-cell.mercantile{background:#fff3e0;color:#b45309;font-weight:600}
-.cal-cell.weekend{color:#ccc}
-/* Orange dot for permission */
-.cal-cell.has-perm::after{content:'';position:absolute;top:3px;right:3px;width:5px;height:5px;border-radius:50%;background:#f97316}
-.cal-cell-sub{font-size:8px;margin-top:1px;opacity:.85}
-.cal-legend{display:flex;gap:10px;flex-wrap:wrap;margin-top:.85rem;padding-top:.75rem;border-top:1px solid #f0f0ee}
-.leg-item{display:flex;align-items:center;gap:5px;font-size:11px;color:#777}
-.leg-dot{width:10px;height:10px;border-radius:3px;flex-shrink:0}
-
-.perm-list{margin-top:1rem;padding-top:.75rem;border-top:1px solid #f0f0ee}
-.perm-list-title{font-size:13px;font-weight:600;color:#555;margin-bottom:.5rem;display:flex;align-items:center;justify-content:space-between}
-.perm-item{display:flex;align-items:center;gap:8px;padding:7px 10px;background:#fff7ed;border-radius:8px;margin-bottom:5px;font-size:12px;border:1px solid #fed7aa;flex-wrap:wrap}
-.perm-item-date{font-weight:600;color:#92400e;min-width:70px}
-.perm-item-times{color:#9a3412;font-weight:500;min-width:80px}
-.perm-item-reason{color:#78350f;flex:1}
-
-.panel{background:#fff;border:1px solid #e8e8e6;border-radius:12px;padding:1.25rem;margin-bottom:1.25rem}
-.panel-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:8px}
-.panel-title{font-size:15px;font-weight:600;color:#111}
-.data-table{width:100%;border-collapse:collapse;font-size:13px}
-.data-table th{text-align:left;padding:8px 10px;color:#888;font-weight:500;border-bottom:1px solid #f0f0ee;font-size:12px}
-.data-table td{padding:8px 10px;border-bottom:1px solid #f8f8f6;vertical-align:middle}
-.data-table tr:last-child td{border-bottom:none}
-.data-table tr:hover td{background:#fafaf8}
-.dept-list{display:flex;flex-direction:column;gap:6px}
-.dept-item{display:flex;align-items:center;justify-content:space-between;padding:9px 14px;background:#fafaf8;border-radius:8px;border:1px solid #f0f0ee}
-.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:100;align-items:center;justify-content:center;padding:1rem}
-.modal-bg.open{display:flex}
-.modal{background:#fff;border-radius:14px;border:1px solid #e0e0de;padding:1.5rem;width:min(440px,100%);max-height:92vh;overflow-y:auto}
-.modal h3{font-size:16px;font-weight:700;margin-bottom:1rem;color:#111}
-.form-row{margin-bottom:13px}
-.form-row label{display:block;font-size:13px;color:#666;margin-bottom:5px;font-weight:500}
-.form-row input,.form-row select,.form-row textarea{width:100%}
-.form-row-2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:13px}
-.form-row-2 label{display:block;font-size:13px;color:#666;margin-bottom:5px;font-weight:500}
-.form-row-2 input,.form-row-2 select{width:100%}
-.form-hint{font-size:11px;color:#aaa;margin-top:4px}
-.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:1rem;flex-wrap:wrap}
-.err-msg{font-size:13px;color:#c0392b;margin-bottom:8px;display:none;padding:7px 10px;background:#fef2f2;border-radius:7px}
-.lv-summary{font-size:12px;color:#555;margin-bottom:10px;padding:8px 10px;background:#f5f5f3;border-radius:7px;display:none;line-height:1.6}
-.report-controls{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1rem}
-.report-table-wrap{overflow-x:auto}
-.no-data{text-align:center;padding:2rem;color:#aaa;font-size:14px}
-.spinner-overlay{display:none;position:fixed;inset:0;background:rgba(255,255,255,.7);z-index:200;align-items:center;justify-content:center;flex-direction:column;gap:12px}
-.spinner-overlay.show{display:flex}
-.spinner{width:36px;height:36px;border:3px solid #e8e8e6;border-top-color:#185FA5;border-radius:50%;animation:spin .7s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-.spinner-msg{font-size:14px;color:#555}
-.toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);background:#111;color:#fff;font-size:13px;padding:9px 18px;border-radius:9px;z-index:999;opacity:0;transition:opacity .2s;pointer-events:none;white-space:nowrap}
-.toast.show{opacity:1}
-.toast.error{background:#c0392b}
-@media(max-width:500px){
-  .cal-cell{font-size:11px}
-  .cal-cell-sub{display:none}
-  .modal{padding:1.1rem}
-  .form-row-2{grid-template-columns:1fr}
-}
+html,body{width:100%;min-height:100%;overflow-x:hidden}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:#f0f2f5;padding:0;margin:0}
+.home{min-height:100vh;background:#1a1a2e;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem 1.25rem}
+.home-logo{width:64px;height:64px;background:#c9a84c;border-radius:16px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:22px;color:#1a1a2e;margin-bottom:1rem}
+.home-title{font-size:22px;font-weight:700;color:#fff;letter-spacing:0.04em;text-align:center}
+.home-sub{font-size:13px;color:#c9a84c;letter-spacing:0.08em;text-align:center;margin-top:4px;margin-bottom:2.5rem}
+.home-cards{display:flex;flex-direction:column;gap:12px;width:100%;max-width:420px}
+.home-card{background:#fff;border-radius:14px;padding:1.25rem 1.5rem;cursor:pointer;display:flex;align-items:center;gap:16px}
+.home-card:active{opacity:0.85}
+.home-card-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.hc1{background:#e8f0fe}.hc2{background:#fce8e6}.hc3{background:#e6f4ea}
+.hct{font-size:15px;font-weight:600;color:#1a1a2e}
+.hcs{font-size:12px;color:#999;margin-top:2px}
+.home-card-arrow{margin-left:auto;color:#ccc;font-size:20px}
+.pin-screen{min-height:100vh;background:#1a1a2e;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem 1.25rem}
+.pin-box{background:#fff;border-radius:16px;padding:2rem 1.5rem;width:100%;max-width:360px;text-align:center}
+.pin-title{font-size:17px;font-weight:600;color:#1a1a2e;margin-bottom:6px}
+.pin-sub{font-size:13px;color:#999;margin-bottom:1.5rem}
+.pin-input{width:100%;height:52px;border:1.5px solid #ddd;border-radius:10px;font-size:24px;text-align:center;letter-spacing:8px;outline:none;background:#fafafa;color:#1a1a2e}
+.pin-input:focus{border-color:#c9a84c}
+.pin-btn{width:100%;height:50px;background:#1a1a2e;color:#c9a84c;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;margin-top:1rem}
+.pin-err{font-size:13px;color:#c62828;margin-top:8px;display:none}
+.pin-back{font-size:13px;color:#c9a84c;margin-top:1rem;cursor:pointer;display:block}
+.app{width:100%;background:#f0f2f5;min-height:100vh;flex-direction:column;display:none}
+.app-header{background:#1a1a2e;padding:1rem 1.25rem;display:flex;align-items:center;gap:12px;width:100%}
+.back-btn{color:#c9a84c;font-size:20px;cursor:pointer;background:none;border:none;padding:0;margin-right:4px}
+.app-logo{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex-shrink:0}
+.brand .name{font-size:15px;font-weight:600;color:#fff;letter-spacing:0.04em}
+.brand .sub{font-size:11px;color:#c9a84c;letter-spacing:0.06em}
+.tabs{display:flex;background:#f0f0f0;padding:4px;gap:3px;width:100%}
+.tab{flex:1;padding:10px 4px;text-align:center;font-size:12px;font-weight:500;cursor:pointer;border-radius:6px;border:none;background:transparent;color:#666;white-space:nowrap}
+.tab.active{background:#fff;color:#1a1a2e;box-shadow:0 1px 3px rgba(0,0,0,0.1)}
+.content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.panel{display:none;padding:1.25rem}
+.panel.active{display:block}
+.field{margin-bottom:1rem}
+label{display:block;font-size:12px;color:#666;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;font-weight:500}
+input,select,textarea{width:100%;padding:0 14px;border:1.5px solid #ddd;border-radius:10px;font-size:16px;background:#fff;color:#1a1a2e;outline:none;height:50px;font-family:inherit;-webkit-appearance:none;appearance:none;display:block}
+textarea{height:90px;padding:12px 14px;resize:none;line-height:1.5}
+input:focus,select:focus,textarea:focus{border-color:#c9a84c}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.btn{width:100%;height:52px;background:#1a1a2e;color:#c9a84c;border:none;border-radius:10px;font-size:16px;font-weight:600;cursor:pointer;margin-top:0.5rem;display:block}
+.btn:active{background:#2a2a4e}
+.btn:disabled{opacity:0.5;cursor:not-allowed}
+.btn-wa{width:100%;height:52px;background:#25D366;color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;margin-top:0.5rem;display:block}
+.btn-wa:active{background:#1da851}
+.btn-wa:disabled{opacity:0.5;cursor:not-allowed}
+.btn-del{width:100%;height:52px;background:#fff;color:#c62828;border:2px solid #c62828;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;margin-top:0.5rem;display:block}
+.btn-del:active{background:#ffebee}
+.btn-del:disabled{opacity:0.5;cursor:not-allowed}
+.inline-btn{height:50px;padding:0 16px;background:#1a1a2e;color:#c9a84c;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0}
+.row{display:flex;gap:8px;align-items:stretch}
+.row input{flex:1;min-width:0}
+.divider{display:flex;align-items:center;gap:10px;margin:1rem 0}
+.divider hr{flex:1;border:none;border-top:1px solid #eee}
+.divider span{font-size:13px;color:#aaa}
+.msg{font-size:14px;margin-top:8px;padding:10px 14px;border-radius:10px;line-height:1.4}
+.msg.ok{background:#e8f5e9;color:#2e7d32}
+.msg.err{background:#ffebee;color:#c62828}
+.hidden{display:none}
+.upload-area{border:2px dashed #ddd;border-radius:10px;padding:1.25rem;text-align:center;cursor:pointer;background:#fafafa;margin-top:4px}
+.upload-area p{font-size:14px;color:#999}
+.preview-row{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
+.preview-thumb{position:relative;width:80px;height:80px;border-radius:10px;overflow:hidden;border:2px solid #c9a84c}
+.preview-thumb img{width:100%;height:100%;object-fit:cover}
+.preview-thumb .rm{position:absolute;top:2px;right:2px;width:22px;height:22px;background:rgba(0,0,0,0.65);color:#fff;border:none;border-radius:50%;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.photo-count{font-size:13px;color:#c9a84c;font-weight:600;margin-top:8px}
+.result-card{background:#fff;border-radius:12px;overflow:hidden;margin-top:1rem;box-shadow:0 1px 3px rgba(0,0,0,0.08)}
+.rhead{background:#1a1a2e;padding:1rem 1.25rem;display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.rhead .ord{font-size:11px;color:#c9a84c;letter-spacing:0.06em;text-transform:uppercase}
+.rhead .mod{font-size:17px;font-weight:600;color:#fff;margin-top:3px}
+.dg{display:grid;grid-template-columns:1fr 1fr}
+.di{padding:0.875rem 1.25rem;border-bottom:1px solid #f0f0f0}
+.di:nth-child(odd){border-right:1px solid #f0f0f0}
+.di.full{grid-column:1/-1;border-right:none}
+.dl{font-size:11px;color:#999;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px}
+.dv{font-size:14px;color:#1a1a2e;font-weight:500;word-break:break-word;line-height:1.4}
+.photo-links a{display:inline-block;margin-right:8px;margin-bottom:4px;font-size:13px;color:#1a6eb5;text-decoration:underline}
+.ubar{padding:1.25rem;background:#f9f9f9;border-top:1px solid #eee}
+.urow{display:flex;gap:8px;margin-top:8px}
+.urow select{flex:1;height:50px;padding:0 12px;border:1.5px solid #ddd;border-radius:10px;font-size:14px;background:#fff;color:#1a1a2e;outline:none;-webkit-appearance:none;min-width:0}
+.save-btn{height:50px;padding:0 18px;background:#25D366;color:#fff;border:2px solid #1da851;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0}
+.save-btn:active{background:#1da851}
+.save-btn:disabled{opacity:0.5;cursor:not-allowed}
+.notfound{text-align:center;padding:2rem 1rem;font-size:14px;color:#999;background:#fff;border-radius:10px;margin-top:1rem}
+.loading{text-align:center;padding:2rem;font-size:14px;color:#999}
+.req{color:#c9a84c;margin-left:2px}
+.list-toggle{display:flex;gap:0;margin-bottom:1rem;border-radius:10px;overflow:hidden;border:1.5px solid #1a1a2e}
+.ltab{flex:1;padding:10px;text-align:center;font-size:13px;font-weight:600;cursor:pointer;background:#fff;color:#1a1a2e;border:none}
+.ltab.active{background:#1a1a2e;color:#c9a84c}
+.ticket-item{background:#fff;border-radius:10px;margin-bottom:8px;box-shadow:0 1px 2px rgba(0,0,0,0.06);overflow:hidden}
+.ticket-item.closed{opacity:0.6}
+.ti-main{padding:0.875rem 1rem}
+.ti-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.ti-order{font-size:11px;color:#c9a84c;font-weight:600;letter-spacing:0.04em;text-transform:uppercase}
+.ti-model{font-size:15px;font-weight:600;color:#1a1a2e;margin-top:2px}
+.ti-issue{font-size:12px;color:#666;margin-top:4px}
+.ti-bottom{display:flex;justify-content:space-between;margin-top:6px}
+.ti-date{font-size:11px;color:#aaa}
+.status-badge{padding:9px 16px;border-radius:20px;font-size:14px;font-weight:700;white-space:nowrap;flex-shrink:0;cursor:pointer;border:2px solid #1a1a2e;letter-spacing:0.02em;box-shadow:0 1px 4px rgba(0,0,0,0.15)}
+.status-badge:active{opacity:0.8;transform:scale(0.97)}
+.s0{background:#e3f2fd;color:#0d47a1}
+.s1{background:#fff8e1;color:#e65100}
+.s2{background:#e8f5e9;color:#1b5e20}
+.s3{background:#e0f2f1;color:#004d40}
+.pm-badge-to{background:#e8eaf6;color:#283593}
+.pm-badge-ready{background:#fff8e1;color:#e65100}
+.pm-badge-done{background:#e8f5e9;color:#1b5e20}
+.ti-status-edit{display:none;padding:0.75rem 1rem;background:#f9f9f9;border-top:1px solid #eee}
+.ti-status-edit.open{display:block}
+.ti-status-edit .se-label{font-size:11px;color:#666;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px}
+.ti-status-edit .se-row{display:flex;gap:8px}
+.ti-status-edit select{flex:1;height:42px;padding:0 10px;border:1.5px solid #ddd;border-radius:8px;font-size:14px;background:#fff;color:#1a1a2e;outline:none;-webkit-appearance:none;min-width:0}
+.ti-status-edit .se-save{height:42px;padding:0 16px;background:#25D366;color:#fff;border:2px solid #1da851;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap}
+.ti-status-edit .se-save:active{background:#1da851}
+.ti-status-edit .se-del{height:42px;padding:0 14px;background:#fff;color:#c62828;border:2px solid #c62828;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap}
+.ti-status-edit .se-del:active{background:#ffebee}
+.ti-status-edit .se-cancel{font-size:12px;color:#999;text-align:right;margin-top:6px;cursor:pointer}
+.empty-state{text-align:center;padding:2rem 1rem;color:#aaa;font-size:14px}
+.dt-status-box{background:#1a1a2e;border-radius:12px;padding:1.25rem;margin-top:1rem;text-align:center}
+.dt-status-label{font-size:12px;color:#c9a84c;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px}
+.dt-status-text{font-size:24px;font-weight:700;color:#fff;line-height:1.3}
+.dt-status-delivered{color:#81c784}
+.upload-excel-area{border:2px dashed #c9a84c;border-radius:12px;padding:1.5rem;text-align:center;cursor:pointer;background:#fffdf5;margin-bottom:1rem}
+.upload-excel-area p{font-size:14px;color:#c9a84c;font-weight:500}
+.upload-excel-area span{font-size:12px;color:#aaa;display:block;margin-top:4px}
+.copy-msg-box{background:#f0f7ff;border:1.5px solid #c9dff7;border-radius:10px;padding:1rem;margin-top:1rem;font-size:13px;color:#1a1a2e;line-height:1.6;white-space:pre-wrap;word-break:break-word}
+.copy-btn{width:100%;height:44px;background:#1a6eb5;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;margin-top:8px}
+@media(max-width:380px){.grid2{grid-template-columns:1fr}.dg{grid-template-columns:1fr}.di:nth-child(odd){border-right:none}.tab{font-size:10px}}
 </style>
 </head>
 <body>
-<div class="spinner-overlay" id="spinnerOverlay">
-  <div class="spinner"></div>
-  <div class="spinner-msg" id="spinnerMsg">Loading…</div>
-</div>
-<div class="app">
-<div class="app-header">
-  <div>
-    <div class="app-title">Leave Tracker</div>
-    <div class="app-subtitle" id="syncStatus">Connecting…</div>
+
+<!-- HOME -->
+<div id="home" class="home">
+  <div class="home-logo">AN</div>
+  <div class="home-title">AN Business Suite</div>
+  <div class="home-sub">INTERNAL MANAGEMENT SYSTEM</div>
+  <div class="home-cards">
+    <div class="home-card" onclick="openApp('warranty')">
+      <div class="home-card-icon hc1">🔧</div>
+      <div><div class="hct">Warranty Tickets</div><div class="hcs">Watch repair &amp; warranty management</div></div>
+      <div class="home-card-arrow">›</div>
+    </div>
+    <div class="home-card" onclick="openApp('pickme')">
+      <div class="home-card-icon hc2">🛵</div>
+      <div><div class="hct">PickMe / Uber Tickets</div><div class="hcs">Local delivery dispatch tracking</div></div>
+      <div class="home-card-arrow">›</div>
+    </div>
+    <div class="home-card" onclick="openApp('delivery')">
+      <div class="home-card-icon hc3">📦</div>
+      <div><div class="hct">Delivery Tracker</div><div class="hcs">Citypak order status &amp; customer updates</div></div>
+      <div class="home-card-arrow">›</div>
+    </div>
   </div>
-  <button class="btn success" onclick="exportCSV()">&#11015; Export CSV</button>
-</div>
-<div class="tabs">
-  <button class="tab active" onclick="switchTab('leaves')">Employees &amp; Leaves</button>
-  <button class="tab" onclick="switchTab('permissions')">Permissions</button>
-  <button class="tab" onclick="switchTab('report')">Report</button>
-  <button class="tab" onclick="switchTab('settings')">Departments</button>
 </div>
 
-<!-- LEAVES TAB -->
-<div id="tab-leaves">
-  <div class="stats" id="stats"></div>
-  <div class="topbar">
-    <div class="search-wrap">
-      <span class="search-icon">&#9906;</span>
-      <input type="text" id="searchBox" placeholder="Search by name or code…" oninput="renderEmployees()">
-    </div>
-    <select id="deptFilter" onchange="renderEmployees()"></select>
-    <select id="typeFilter" onchange="renderEmployees()">
-      <option value="">All types</option>
-      <option value="full-time">Full-time</option>
-      <option value="part-time">Part-time</option>
-    </select>
-    <button class="btn primary" onclick="openLeaveModal(null)">+ Add leave</button>
-    <button class="btn" onclick="openEmpModal(null)">+ New employee</button>
+<!-- PIN -->
+<div id="pin-screen" class="pin-screen" style="display:none">
+  <div class="pin-box">
+    <div class="pin-title">Enter PIN</div>
+    <div class="pin-sub">Enter your access PIN to continue</div>
+    <input type="password" inputmode="numeric" maxlength="6" class="pin-input" id="pin-input" placeholder="••••">
+    <button class="pin-btn" onclick="checkPin()">Continue</button>
+    <div class="pin-err" id="pin-err">Incorrect PIN. Please try again.</div>
+    <span class="pin-back" onclick="goHome()">← Back to home</span>
   </div>
-  <div class="emp-grid" id="empGrid"></div>
-  <div class="cal-section" id="calSection" style="display:none">
-    <div class="cal-header">
-      <div>
-        <div class="cal-title" id="calEmpName"></div>
-        <div class="cal-sub" id="calEmpSub"></div>
+</div>
+
+<!-- WARRANTY APP -->
+<div id="app-warranty" class="app">
+  <div class="app-header">
+    <button class="back-btn" onclick="goHome()">←</button>
+    <div class="app-logo" style="background:#c9a84c;color:#1a1a2e">AN</div>
+    <div class="brand"><div class="name">Warranty Tickets</div><div class="sub">ANIX WATCH SERVICE</div></div>
+  </div>
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('warranty','add',this)">+ New</button>
+    <button class="tab" onclick="switchTab('warranty','list',this)">All Tickets</button>
+    <button class="tab" onclick="switchTab('warranty','search',this)">Search &amp; Update</button>
+  </div>
+  <div class="content">
+    <div id="w-panel-add" class="panel active">
+      <div class="grid2">
+        <div class="field"><label>Order number<span class="req">*</span></label><input type="text" id="w-order" placeholder="e.g. ORD-001"></div>
+        <div class="field"><label>Hand-over date<span class="req">*</span></label><input type="date" id="w-date"></div>
       </div>
-      <div class="cal-nav">
-        <button class="btn" onclick="shiftMonth(-1)">&#8249;</button>
-        <span id="calMonthLabel"></span>
-        <button class="btn" onclick="shiftMonth(1)">&#8250;</button>
+      <div class="field"><label>Issue<span class="req">*</span></label><textarea id="w-issue" placeholder="Describe the issue..."></textarea></div>
+      <div class="grid2">
+        <div class="field"><label>Model name<span class="req">*</span></label><input type="text" id="w-model" placeholder="e.g. Seiko SKX007"></div>
+        <div class="field"><label>Contact number<span class="req">*</span></label><input type="text" id="w-contact" placeholder="e.g. 0771234567"></div>
+      </div>
+      <div class="grid2">
+        <div class="field"><label>Warranty status<span class="req">*</span></label>
+          <select id="w-warranty"><option value="">Select...</option><option>Under-Warranty Repair</option><option>Out of Warranty - Repair/Service Only</option></select></div>
+        <div class="field"><label>Current status<span class="req">*</span></label>
+          <select id="w-status"><option value="">Select...</option><option>Received for Repair</option><option>Handed over to Tech</option><option>Ready for Collection</option><option>Completed/Dispatched</option></select></div>
+      </div>
+      <div class="field">
+        <label>Photos (up to 3)</label>
+        <div class="upload-area" id="w-upload-area"><p>📷 Tap to add photos</p><input type="file" id="w-photos" accept="image/*" multiple style="display:none"></div>
+        <div class="preview-row" id="w-preview"></div>
+        <div class="photo-count" id="w-count"></div>
+      </div>
+      <div class="field"><label>Remarks / notes</label><textarea id="w-remarks" placeholder="Any additional notes..."></textarea></div>
+      <div id="w-add-msg" class="msg hidden"></div>
+      <button class="btn-wa" id="w-add-btn" onclick="wSubmit()">📲 Submit &amp; Notify</button>
+    </div>
+
+    <div id="w-panel-list" class="panel">
+      <div style="display:flex;justify-content:flex-end;margin-bottom:0.75rem">
+        <button class="inline-btn" style="height:36px;font-size:12px" onclick="wLoadList()">↻ Refresh</button>
+      </div>
+      <div class="list-toggle">
+        <button class="ltab active" id="w-ltab-active" onclick="wSwitchList('active')">🟢 Active</button>
+        <button class="ltab" id="w-ltab-closed" onclick="wSwitchList('closed')">✅ Closed (last 25)</button>
+      </div>
+      <div id="w-list-loading" class="loading hidden">Loading...</div>
+      <div id="w-list-error" class="notfound hidden">Could not load. Tap refresh.</div>
+      <div id="w-active-list"></div>
+      <div id="w-closed-list" class="hidden"></div>
+    </div>
+
+    <div id="w-panel-search" class="panel">
+      <div class="field"><label>Search by order number</label>
+        <div class="row"><input type="text" id="w-s-order" placeholder="Order number"><button class="inline-btn" onclick="wSearch('order')">Search</button></div></div>
+      <div class="divider"><hr><span>or</span><hr></div>
+      <div class="field"><label>Search by contact number</label>
+        <div class="row"><input type="text" id="w-s-contact" placeholder="Contact number"><button class="inline-btn" onclick="wSearch('contact')">Search</button></div></div>
+      <div id="w-s-loading" class="loading hidden">Searching...</div>
+      <div id="w-s-notfound" class="notfound hidden">No ticket found.</div>
+      <div id="w-s-result" class="result-card hidden">
+        <div class="rhead"><div><div class="ord" id="w-sr-order"></div><div class="mod" id="w-sr-model"></div></div></div>
+        <div class="dg">
+          <div class="di"><div class="dl">Issue</div><div class="dv" id="w-sr-issue"></div></div>
+          <div class="di"><div class="dl">Date</div><div class="dv" id="w-sr-date"></div></div>
+          <div class="di"><div class="dl">Contact</div><div class="dv" id="w-sr-contact"></div></div>
+          <div class="di"><div class="dl">Warranty</div><div class="dv" id="w-sr-warranty"></div></div>
+          <div class="di full"><div class="dl">Remarks</div><div class="dv" id="w-sr-remarks"></div></div>
+          <div class="di full"><div class="dl">Photos</div><div class="dv photo-links" id="w-sr-photos"></div></div>
+        </div>
+        <div class="ubar">
+          <div class="dl" style="font-size:12px;color:#999;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px">Update status</div>
+          <div class="urow">
+            <select id="w-u-status"><option>Received for Repair</option><option>Handed over to Tech</option><option>Ready for Collection</option><option>Completed/Dispatched</option></select>
+            <button class="save-btn" id="w-save-btn" onclick="wSave()">Update &amp; Notify</button>
+          </div>
+          <div class="field" style="margin-top:1rem">
+            <label>Add photos (optional)</label>
+            <div class="upload-area" id="w-u-upload-area"><p>📷 Tap to add photos</p><input type="file" id="w-u-photos" accept="image/*" multiple style="display:none"></div>
+            <div class="preview-row" id="w-u-preview"></div>
+            <div class="photo-count" id="w-u-count"></div>
+          </div>
+          <div id="w-u-msg" class="msg hidden"></div>
+          <button class="btn-del" id="w-del-btn" onclick="wDelete()">🗑 Delete Ticket</button>
+        </div>
       </div>
     </div>
-    <div class="cal-month-summary" id="calMonthSummary"></div>
-    <div class="cal-grid" id="calGrid"></div>
-    <div class="cal-legend">
-      <div class="leg-item"><div class="leg-dot" style="background:#fca5a5"></div>Leave (all types)</div>
-      <div class="leg-item"><div class="leg-dot" style="background:#c4b5fd"></div>Weekly off</div>
-      <div class="leg-item"><div class="leg-dot" style="background:#fcd34d"></div>Mercantile holiday</div>
-      <div class="leg-item"><div style="width:10px;height:10px;border-radius:50%;background:#f97316;flex-shrink:0"></div>Permission</div>
-    </div>
-    <div class="perm-list" id="calPermList" style="display:none">
-      <div class="perm-list-title">
-        <span>Permissions this month</span>
-        <button class="btn xs amber" onclick="openPermModal(null)">+ Add permission</button>
+  </div>
+</div>
+
+<!-- PICKME APP -->
+<div id="app-pickme" class="app">
+  <div class="app-header">
+    <button class="back-btn" onclick="goHome()">←</button>
+    <div class="app-logo" style="background:#e53935;color:#fff">PM</div>
+    <div class="brand"><div class="name">PickMe / Uber</div><div class="sub">LOCAL DELIVERY TICKETS</div></div>
+  </div>
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('pickme','add',this)">+ New</button>
+    <button class="tab" onclick="switchTab('pickme','list',this)">All Tickets</button>
+    <button class="tab" onclick="switchTab('pickme','search',this)">Search &amp; Update</button>
+  </div>
+  <div class="content">
+    <div id="pm-panel-add" class="panel active">
+      <div class="grid2">
+        <div class="field"><label>Order number<span class="req">*</span></label><input type="text" id="pm-order" placeholder="e.g. 14500"></div>
+        <div class="field"><label>Dispatch due date<span class="req">*</span></label><input type="date" id="pm-due"></div>
       </div>
-      <div id="calPermItems"></div>
+      <div id="pm-add-msg" class="msg hidden"></div>
+      <button class="btn-wa" id="pm-add-btn" onclick="pmSubmit()">📲 Create &amp; Notify</button>
+    </div>
+
+    <div id="pm-panel-list" class="panel">
+      <div style="display:flex;justify-content:flex-end;margin-bottom:0.75rem">
+        <button class="inline-btn" style="height:36px;font-size:12px" onclick="pmLoadList()">↻ Refresh</button>
+      </div>
+      <div class="list-toggle">
+        <button class="ltab active" id="pm-ltab-active" onclick="pmSwitchList('active')">🟢 Pending</button>
+        <button class="ltab" id="pm-ltab-closed" onclick="pmSwitchList('closed')">✅ Delivered (last 25)</button>
+      </div>
+      <div id="pm-list-loading" class="loading hidden">Loading...</div>
+      <div id="pm-list-error" class="notfound hidden">Could not load. Tap refresh.</div>
+      <div id="pm-active-list"></div>
+      <div id="pm-closed-list" class="hidden"></div>
+    </div>
+
+    <div id="pm-panel-search" class="panel">
+      <div class="field"><label>Search by order number</label>
+        <div class="row"><input type="text" id="pm-s-order" placeholder="Order number"><button class="inline-btn" onclick="pmSearch()">Search</button></div></div>
+      <div id="pm-s-loading" class="loading hidden">Searching...</div>
+      <div id="pm-s-notfound" class="notfound hidden">No ticket found.</div>
+      <div id="pm-s-result" class="result-card hidden">
+        <div class="rhead"><div><div class="ord" id="pm-sr-order"></div><div class="mod" id="pm-sr-due"></div></div></div>
+        <div class="dg">
+          <div class="di full"><div class="dl">Current status</div><div class="dv" id="pm-sr-status" style="font-size:16px;font-weight:700"></div></div>
+          <div class="di"><div class="dl">Delivery charge paid by</div><div class="dv" id="pm-sr-charge"></div></div>
+          <div class="di"><div class="dl">Amount paid</div><div class="dv" id="pm-sr-amount"></div></div>
+        </div>
+        <div class="ubar">
+          <div class="dl" style="font-size:12px;color:#999;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px">Update status</div>
+          <div class="urow">
+            <select id="pm-u-status"><option>To be Processed</option><option>Package Ready</option><option>Delivered/Completed</option></select>
+            <button class="save-btn" id="pm-save-btn" onclick="pmSave()">Update &amp; Notify</button>
+          </div>
+          <div id="pm-delivery-charge" class="field hidden" style="margin-top:1rem">
+            <label>Who paid the delivery charge?<span class="req">*</span></label>
+            <select id="pm-charge-payer"><option value="">Select...</option><option>We Paid</option><option>Customer Paid</option></select>
+          </div>
+          <div id="pm-amount-field" class="field hidden" style="margin-top:0.75rem">
+            <label>Amount we paid (LKR)<span class="req">*</span></label>
+            <input type="number" id="pm-amount-input" placeholder="e.g. 350">
+          </div>
+          <div class="field" style="margin-top:1rem">
+            <label>Change due date</label>
+            <div class="urow" style="margin-top:0">
+              <input type="date" id="pm-u-due" style="flex:1;min-width:0;height:50px">
+              <button class="save-btn" onclick="pmSaveDue()" style="background:#1a1a2e;border-color:#1a1a2e">Save Date</button>
+            </div>
+          </div>
+          <div id="pm-u-msg" class="msg hidden"></div>
+          <button class="btn-del" id="pm-del-btn" onclick="pmDelete()">🗑 Delete Ticket</button>
+        </div>
+      </div>
     </div>
   </div>
 </div>
 
-<!-- PERMISSIONS TAB -->
-<div id="tab-permissions" style="display:none">
-  <div class="panel">
-    <div class="panel-header">
-      <div class="panel-title">Permission log</div>
-      <button class="btn amber" onclick="openPermModal(null)">+ Add permission</button>
+<!-- DELIVERY TRACKER -->
+<div id="app-delivery" class="app">
+  <div class="app-header">
+    <button class="back-btn" onclick="goHome()">←</button>
+    <div class="app-logo" style="background:#2e7d32;color:#fff">DT</div>
+    <div class="brand"><div class="name">Delivery Tracker</div><div class="sub">CITYPAK ORDER STATUS</div></div>
+  </div>
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('delivery','search',this)">🔍 Search</button>
+    <button class="tab" onclick="switchTab('delivery','upload',this)">📤 Upload</button>
+  </div>
+  <div class="content">
+    <div id="dt-panel-search" class="panel active">
+      <div class="field"><label>Search by order number</label>
+        <div class="row"><input type="text" id="dt-s-order" placeholder="e.g. 14540"><button class="inline-btn" onclick="dtSearch('order')">Search</button></div></div>
+      <div class="divider"><hr><span>or</span><hr></div>
+      <div class="field"><label>Search by waybill number</label>
+        <div class="row"><input type="text" id="dt-s-waybill" placeholder="e.g. D15429701"><button class="inline-btn" onclick="dtSearch('waybill')">Search</button></div></div>
+      <div id="dt-s-loading" class="loading hidden">Searching...</div>
+      <div id="dt-s-notfound" class="notfound hidden">No order found. Please check and try again.</div>
+      <div id="dt-s-result" class="hidden">
+        <div class="dt-status-box">
+          <div class="dt-status-label">Current Status</div>
+          <div class="dt-status-text" id="dt-sr-status">—</div>
+        </div>
+        <div class="result-card" style="margin-top:12px">
+          <div class="rhead"><div><div class="ord" id="dt-sr-order"></div><div class="mod" id="dt-sr-name"></div></div></div>
+          <div class="dg">
+            <div class="di"><div class="dl">Waybill</div><div class="dv" id="dt-sr-waybill"></div></div>
+            <div class="di"><div class="dl">Handover date</div><div class="dv" id="dt-sr-handover"></div></div>
+            <div class="di"><div class="dl">City</div><div class="dv" id="dt-sr-city"></div></div>
+            <div class="di"><div class="dl">Payment</div><div class="dv" id="dt-sr-payment"></div></div>
+          </div>
+        </div>
+        <div style="font-size:12px;font-weight:600;color:#666;text-transform:uppercase;letter-spacing:0.08em;margin:1rem 0 0.5rem">📋 Customer Message</div>
+        <div class="copy-msg-box" id="dt-copy-msg"></div>
+        <button class="copy-btn" onclick="dtCopy()">📋 Copy Message</button>
+      </div>
     </div>
-    <div class="report-controls">
-      <select id="prpt_emp" onchange="renderPermReport()"><option value="">All employees</option></select>
-      <select id="prpt_year" onchange="renderPermReport()"></select>
-      <select id="prpt_month" onchange="renderPermReport()">
-        <option value="">All months</option>
-        <option value="0">January</option><option value="1">February</option><option value="2">March</option>
-        <option value="3">April</option><option value="4">May</option><option value="5">June</option>
-        <option value="6">July</option><option value="7">August</option><option value="8">September</option>
-        <option value="9">October</option><option value="10">November</option><option value="11">December</option>
-      </select>
-    </div>
-    <div class="report-table-wrap">
-      <table class="data-table">
-        <thead><tr><th>Employee</th><th>Code</th><th>Date</th><th>Time In</th><th>Time Out</th><th>Reason</th><th></th></tr></thead>
-        <tbody id="permReportBody"></tbody>
-      </table>
-    </div>
-    <div style="margin-top:8px;font-size:13px;color:#888" id="permReportSummary"></div>
-  </div>
-</div>
-
-<!-- REPORT TAB -->
-<div id="tab-report" style="display:none">
-  <div class="panel">
-    <div class="panel-header">
-      <div class="panel-title">Leave report</div>
-      <button class="btn success" onclick="exportCSV()">&#11015; Export CSV</button>
-    </div>
-    <div class="report-controls">
-      <select id="rpt_emp" onchange="renderReport()"><option value="">All employees</option></select>
-      <select id="rpt_type" onchange="renderReport()">
-        <option value="">All types</option>
-        <option value="annual">Annual</option><option value="sick">Sick</option>
-        <option value="casual">Casual</option><option value="unpaid">Unpaid</option>
-      </select>
-      <select id="rpt_year" onchange="renderReport()"></select>
-      <select id="rpt_month" onchange="renderReport()">
-        <option value="">All months</option>
-        <option value="0">January</option><option value="1">February</option><option value="2">March</option>
-        <option value="3">April</option><option value="4">May</option><option value="5">June</option>
-        <option value="6">July</option><option value="7">August</option><option value="8">September</option>
-        <option value="9">October</option><option value="10">November</option><option value="11">December</option>
-      </select>
-    </div>
-    <div class="report-table-wrap">
-      <table class="data-table">
-        <thead><tr><th>Employee</th><th>Emp Type</th><th>Leave</th><th>Half</th><th>From</th><th>To</th><th>Days</th><th>Note</th><th></th></tr></thead>
-        <tbody id="reportBody"></tbody>
-      </table>
-    </div>
-    <div style="margin-top:8px;font-size:13px;color:#888" id="reportSummary"></div>
-  </div>
-</div>
-
-<!-- DEPARTMENTS TAB -->
-<div id="tab-settings" style="display:none">
-  <div class="panel">
-    <div class="panel-header">
-      <div class="panel-title">Departments</div>
-      <button class="btn primary" onclick="openDeptModal()">+ Add department</button>
-    </div>
-    <div class="dept-list" id="deptList"></div>
-  </div>
-</div>
-</div>
-
-<!-- Leave modal -->
-<div class="modal-bg" id="leaveModal">
-<div class="modal">
-  <h3 id="leaveModalTitle">Log leave</h3>
-  <div class="form-row"><label>Employee</label><select id="lv_emp" onchange="updateLeaveSummary()"></select></div>
-  <div class="form-row"><label>Leave type</label>
-    <select id="lv_type">
-      <option value="annual">Annual</option><option value="sick">Sick</option>
-      <option value="casual">Casual</option><option value="unpaid">Unpaid</option>
-    </select>
-  </div>
-  <div class="form-row">
-    <label>Full day or half day?</label>
-    <select id="lv_half" onchange="updateLeaveSummary()">
-      <option value="">Full day</option>
-      <option value="first">First half</option>
-      <option value="second">Second half</option>
-    </select>
-  </div>
-  <div class="form-row-2">
-    <div><label>From date</label><input type="date" id="lv_from" onchange="updateLeaveSummary()"></div>
-    <div><label>To date</label><input type="date" id="lv_to" onchange="updateLeaveSummary()"></div>
-  </div>
-  <div class="lv-summary" id="lv_summary"></div>
-  <div class="form-row"><label>Note (optional)</label><textarea id="lv_note" placeholder="Reason or remarks…"></textarea></div>
-  <div class="err-msg" id="lv_err"></div>
-  <div class="modal-actions">
-    <button class="btn" onclick="closeLeaveModal()">Cancel</button>
-    <button class="btn primary" id="saveLvBtn" onclick="saveLeave()">Save leave</button>
-  </div>
-</div>
-</div>
-
-<!-- Permission modal -->
-<div class="modal-bg" id="permModal">
-<div class="modal">
-  <h3 id="permModalTitle">Log permission</h3>
-  <div class="form-row"><label>Employee</label><select id="pm_emp"></select></div>
-  <div class="form-row"><label>Date</label><input type="date" id="pm_date"></div>
-  <div class="form-row-2">
-    <div><label>Actual time in <span style="font-weight:400;color:#bbb">(if came late)</span></label><input type="time" id="pm_timein"></div>
-    <div><label>Actual time out <span style="font-weight:400;color:#bbb">(if left early)</span></label><input type="time" id="pm_timeout"></div>
-  </div>
-  <div class="form-row"><label>Reason</label><textarea id="pm_reason" placeholder="e.g. Doctor appointment, family matter…"></textarea></div>
-  <div class="err-msg" id="pm_err"></div>
-  <div class="modal-actions">
-    <button class="btn danger" id="permDeleteBtn" onclick="deletePermissionEdit()" style="margin-right:auto;display:none">Remove</button>
-    <button class="btn" onclick="closePermModal()">Cancel</button>
-    <button class="btn amber" id="savePermBtn" onclick="savePermission()">Save permission</button>
-  </div>
-</div>
-</div>
-
-<!-- Employee modal -->
-<div class="modal-bg" id="empModal">
-<div class="modal">
-  <h3 id="empModalTitle">Add employee</h3>
-  <div class="form-row"><label>Full name</label><input type="text" id="em_name" placeholder="e.g. Kamal Perera"></div>
-  <div class="form-row-2">
-    <div><label>Employee code</label><input type="text" id="em_code" placeholder="e.g. EMP-042"></div>
-    <div><label>Employment type</label>
-      <select id="em_type">
-        <option value="full-time">Full-time</option>
-        <option value="part-time">Part-time</option>
-      </select>
+    <div id="dt-panel-upload" class="panel">
+      <div style="font-size:12px;font-weight:600;color:#666;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.75rem">Upload Citypak Excel</div>
+      <p style="font-size:13px;color:#666;margin-bottom:1rem;line-height:1.5">Upload the daily Citypak export. Previous data will be replaced with the new file.</p>
+      <div class="upload-excel-area" id="dt-upload-area">
+        <p>📤 Tap to select Citypak file</p>
+        <span>Supports .csv files</span>
+        <input type="file" id="dt-file" accept=".csv" style="display:none">
+      </div>
+      <div id="dt-upload-msg" class="msg hidden"></div>
+      <button class="btn" id="dt-upload-btn" style="display:none" onclick="dtUpload()">Process &amp; Upload</button>
     </div>
   </div>
-  <div class="form-row"><label>Department</label><select id="em_dept"></select></div>
-  <div class="form-row">
-    <label>Weekly paid holiday (off day)</label>
-    <select id="em_offday">
-      <option value="">— None —</option>
-      <option value="0">Sunday</option><option value="1">Monday</option><option value="2">Tuesday</option>
-      <option value="3">Wednesday</option><option value="4">Thursday</option><option value="5">Friday</option>
-      <option value="6">Saturday</option>
-    </select>
-    <div class="form-hint">Highlighted purple on the calendar every week</div>
-  </div>
-  <div class="err-msg" id="em_err"></div>
-  <div class="modal-actions">
-    <button class="btn danger" id="empDeleteBtn" onclick="deleteEmployee()" style="margin-right:auto;display:none">Remove employee</button>
-    <button class="btn" onclick="closeEmpModal()">Cancel</button>
-    <button class="btn primary" id="empSaveBtn" onclick="saveEmployee()">Add employee</button>
-  </div>
 </div>
-</div>
-
-<!-- Dept modal -->
-<div class="modal-bg" id="deptModal">
-<div class="modal" style="width:min(340px,100%)">
-  <h3>Add department</h3>
-  <div class="form-row"><label>Department name</label><input type="text" id="dept_name" placeholder="e.g. Marketing"></div>
-  <div class="err-msg" id="dept_err"></div>
-  <div class="modal-actions">
-    <button class="btn" onclick="closeDeptModal()">Cancel</button>
-    <button class="btn primary" onclick="saveDept()">Add department</button>
-  </div>
-</div>
-</div>
-
-<!-- Confirm modal -->
-<div class="modal-bg" id="confirmModal">
-<div class="modal" style="width:min(340px,100%)">
-  <h3 id="confirmTitle">Are you sure?</h3>
-  <p style="font-size:14px;color:#555;margin-bottom:1rem;line-height:1.5" id="confirmMsg"></p>
-  <div class="modal-actions">
-    <button class="btn" onclick="closeConfirm()">Cancel</button>
-    <button class="btn danger" id="confirmOkBtn">Delete</button>
-  </div>
-</div>
-</div>
-<div class="toast" id="toast"></div>
 
 <script>
-// ══════════════════════════════════════════════════════
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyxTRQyt0dve1gWiQZfne5q-24r-QCmlVs1b3_jicfghFZwzd5SC43oJ0dd8HfvNDeQCA/exec';
-// ══════════════════════════════════════════════════════
+var PIN='1234';
+var SCRIPT_URL='https://script.google.com/macros/s/AKfycbxW2amo9krzMporEOAcmA4OatkNhRxu6rWO4d9GZh87EcSfl2KsMIfSVjgmiaOUMNsbrg/exec';
+var W_SHEET_ID='10fWP5cdhD2V2c_n1yXsD8uF2RdkvJOd7OXs6hsmagzw';
+var W_SHEET_NAME='Form Responses 1';
+var PM_SHEET_NAME='PickMe Tickets';
+var DT_SHEET_NAME='Citypak Data';
+var W_WA_GROUP='https://chat.whatsapp.com/EVgIRY1zoVuGobYMUkjty0';
+var PM_WA_GROUP='https://chat.whatsapp.com/D2qMRMBSOe67EF8yxxzPp5';
+var currentApp=null;
+var wCurOrder=null,wAddPhotos=[],wUpdPhotos=[];
+var pmCurOrder=null;
+var HOLIDAYS=['2026-01-01','2026-01-14','2026-01-15','2026-02-04','2026-02-14','2026-03-11','2026-03-21','2026-04-13','2026-04-14','2026-04-23','2026-05-01','2026-05-20','2026-06-11','2026-07-10','2026-08-07','2026-09-16','2026-10-06','2026-10-20','2026-11-11','2026-12-25','2025-01-01','2025-02-04','2025-04-13','2025-04-14','2025-05-01','2025-12-25'];
 
-const MERC = {
-  '2025-01-13':'Duruthu Full Moon Poya','2025-01-14':'Tamil Thai Pongal Day',
-  '2025-02-04':'National Independence Day','2025-02-12':'Navam Full Moon Poya',
-  '2025-03-13':'Madin Full Moon Poya','2025-03-31':'Id-Ul-Fitr',
-  '2025-04-12':'Bak Full Moon Poya','2025-04-13':'Day prior to New Year',
-  '2025-04-14':'Sinhala & Tamil New Year','2025-05-01':'May Day',
-  '2025-05-12':'Vesak Full Moon Poya','2025-05-13':'Day following Vesak',
-  '2025-06-10':'Poson Full Moon Poya','2025-07-10':'Esala Full Moon Poya',
-  '2025-08-08':'Nikini Full Moon Poya','2025-09-05':'Milad-Un-Nabi',
-  '2025-09-07':'Binara Full Moon Poya','2025-10-06':'Vap Full Moon Poya',
-  '2025-11-05':'Ill Full Moon Poya','2025-12-04':'Unduvap Full Moon Poya',
-  '2025-12-25':'Christmas Day',
-  '2026-01-03':'Duruthu Full Moon Poya','2026-01-15':'Tamil Thai Pongal Day',
-  '2026-02-01':'Nawam Full Moon Poya','2026-02-04':'Independence Day',
-  '2026-02-15':'Maha Sivarathri','2026-03-02':'Medin Full Moon Poya',
-  '2026-03-21':'Id-Ul-Fitr','2026-04-01':'Bak Full Moon Poya',
-  '2026-04-13':'Day prior to New Year','2026-04-14':'Sinhala & Tamil New Year',
-  '2026-05-01':'May Day & Adhi Vesak','2026-05-28':'Id-Ul-Alha',
-  '2026-05-30':'Vesak Full Moon Poya','2026-05-31':'Day following Vesak',
-  '2026-06-29':'Poson Full Moon Poya','2026-07-29':'Esala Full Moon Poya',
-  '2026-08-26':'Milad-Un-Nabi','2026-08-27':'Nikini Full Moon Poya',
-  '2026-09-26':'Binara Full Moon Poya','2026-10-25':'Vap Full Moon Poya',
-  '2026-11-08':'Deepavali','2026-11-24':'Il Full Moon Poya',
-  '2026-12-23':'Unduvap Full Moon Poya','2026-12-25':'Christmas Day',
-};
-
-const DAY_NAMES=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-const DAY_SHORT=['Su','Mo','Tu','We','Th','Fr','Sa'];
-const ABG=['#dbeafe','#dcfce7','#fee2d5','#fef9c3','#fce7f3','#ede9fe','#e0f2fe'];
-const AFG=['#1e40af','#166534','#9a3412','#854d0e','#9d174d','#5b21b6','#0369a1'];
-function ini(n){return n.trim().split(/\s+/).map(w=>w[0]).join('').slice(0,2).toUpperCase()}
-function abg(id){return ABG[id%ABG.length]}
-function afg(id){return AFG[id%AFG.length]}
-
-let departments=[], employees=[], leaves=[], permissions=[];
-let nextEmpId=1, nextLvId=1, nextPermId=1;
-let selectedEmpId=null;
-let calY=new Date().getFullYear(), calM=new Date().getMonth();
-let editingEmpId=null, editingLvId=null, editingPermId=null;
-let activeTab='leaves';
-let confirmCb=null;
-
-function spinner(show,msg='Saving…'){
-  document.getElementById('spinnerOverlay').classList.toggle('show',show);
-  document.getElementById('spinnerMsg').textContent=msg;
-}
-function showToast(msg,isErr=false){
-  const t=document.getElementById('toast');
-  t.textContent=msg;t.className='toast'+(isErr?' error':'');
-  t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);
-}
-async function apiGet(params){
-  const r=await fetch(SCRIPT_URL+'?'+new URLSearchParams(params));
-  const j=await r.json();if(j.error)throw new Error(j.error);return j;
-}
-async function apiPost(body){
-  const r=await fetch(SCRIPT_URL,{method:'POST',body:JSON.stringify(body)});
-  const j=await r.json();if(j.error)throw new Error(j.error);return j;
-}
-
-async function loadAll(){
-  spinner(true,'Loading data…');
-  try{
-    const data=await apiGet({action:'getAll'});
-    departments=data.departments||[];
-    employees=data.employees||[];
-    leaves=data.leaves||[];
-    permissions=data.permissions||[];
-    nextEmpId=data.nextEmpId||1;
-    nextLvId=data.nextLeaveId||1;
-    nextPermId=data.nextPermId||1;
-    document.getElementById('syncStatus').textContent='Connected · '+new Date().toLocaleTimeString();
-    renderAll();
-  }catch(e){
-    document.getElementById('syncStatus').textContent='Connection error';
-    showToast('Could not connect to Google Sheets',true);
-  }finally{spinner(false);}
-}
-
-// Parse YYYY-MM-DD as local date (avoids UTC midnight timezone shift)
-function parseLocal(ds){
-  const p=ds.split('-').map(Number);
-  return new Date(p[0],p[1]-1,p[2]);
-}
-function toYMD(dt){
-  return dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0')+'-'+String(dt.getDate()).padStart(2,'0');
-}
-function range(from,to){
-  const d=[],cur=parseLocal(from),end=parseLocal(to);
-  while(cur<=end){d.push(toYMD(cur));cur.setDate(cur.getDate()+1);}
-  return d;
-}
-function leavemap(empId){
-  const m={};
-  leaves.filter(l=>l.empId===empId).forEach(l=>{
-    range(l.from,l.to).forEach(d=>{m[d]={type:l.type,half:l.half||''};});
-  });
-  return m;
-}
-function permmap(empId){
-  const m={};
-  permissions.filter(p=>p.empId===empId).forEach(p=>{m[p.date]=p;});
-  return m;
-}
-function fmt(ds){if(!ds)return '';const[y,m,d]=ds.split('-');return `${d}/${m}/${y}`;}
-function isMerc(ds){return !!MERC[ds];}
-
-function switchTab(t){
-  activeTab=t;
-  ['leaves','permissions','report','settings'].forEach((x,i)=>{
-    document.getElementById('tab-'+x).style.display=x===t?'':'none';
-    document.querySelectorAll('.tab')[i].classList.toggle('active',x===t);
-  });
-  if(t==='report')renderReport();
-  if(t==='settings')renderDepts();
-  if(t==='permissions')renderPermReport();
-}
-
-function renderStats(){
-  const today=new Date().toISOString().slice(0,10);
-  const onLeave=new Set();
-  leaves.forEach(l=>{if(range(l.from,l.to).includes(today))onLeave.add(l.empId);});
-  const tm=new Date(),ty=tm.getFullYear(),tmo=tm.getMonth();
-  const md=leaves.reduce((s,l)=>{
-    const f=parseLocal(l.from);
-    return f.getFullYear()===ty&&f.getMonth()===tmo?s+(l.half?0.5:range(l.from,l.to).length):s;
-  },0);
-  const ft=employees.filter(e=>e.empType==='full-time'||!e.empType).length;
-  const pt=employees.filter(e=>e.empType==='part-time').length;
-  const thisMonthPerms=permissions.filter(p=>{
-    const f=parseLocal(p.date);return f.getFullYear()===ty&&f.getMonth()===tmo;
-  }).length;
-  document.getElementById('stats').innerHTML=`
-    <div class="stat"><div class="stat-label">Full-time</div><div class="stat-val">${ft}</div></div>
-    <div class="stat"><div class="stat-label">Part-time</div><div class="stat-val">${pt}</div></div>
-    <div class="stat"><div class="stat-label">On leave today</div><div class="stat-val">${onLeave.size}</div></div>
-    <div class="stat"><div class="stat-label">Leave days this month</div><div class="stat-val">${md}</div></div>
-    <div class="stat"><div class="stat-label">Permissions this month</div><div class="stat-val">${thisMonthPerms}</div></div>
-  `;
-}
-
-function populateDeptFilter(){
-  const sel=document.getElementById('deptFilter');
-  const cur=sel.value;
-  sel.innerHTML='<option value="">All departments</option>'+departments.map(d=>`<option${cur===d?' selected':''}>${d}</option>`).join('');
-}
-
-function renderEmployees(){
-  populateDeptFilter();
-  const q=document.getElementById('searchBox').value.toLowerCase();
-  const dept=document.getElementById('deptFilter').value;
-  const etype=document.getElementById('typeFilter').value;
-  const filtered=employees.filter(e=>
-    (e.name.toLowerCase().includes(q)||e.code.toLowerCase().includes(q))&&
-    (!dept||e.dept===dept)&&(!etype||e.empType===etype)
-  );
-  if(!filtered.length){document.getElementById('empGrid').innerHTML='<div class="no-data">No employees found</div>';return;}
-  document.getElementById('empGrid').innerHTML=filtered.map(e=>{
-    const lm=leavemap(e.id);
-    const pm=permmap(e.id);
-    const tc={annual:0,sick:0,casual:0,unpaid:0};
-    let halfDays=0;
-    Object.values(lm).forEach(v=>{if(v.half)halfDays+=0.5;else tc[v.type]=(tc[v.type]||0)+1;});
-    const permCount=Object.keys(pm).length;
-    const pills=Object.entries(tc).filter(([,v])=>v>0).map(([k,v])=>`<span class="pill ${k}">${v}d ${k}</span>`).join('');
-    const halfPill=halfDays>0?`<span class="pill halfday">${halfDays}d half</span>`:'';
-    const permPill=permCount>0?`<span class="pill perm">${permCount} perm</span>`:'';
-    const odb=e.offday!==''&&e.offday!==undefined?`<span class="offday-badge">${DAY_NAMES[e.offday]} off</span>`:'';
-    const tb=`<span class="badge ${e.empType==='part-time'?'parttime':'fulltime'}">${e.empType==='part-time'?'Part-time':'Full-time'}</span>`;
-    const last7=[];for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);last7.push(d.toISOString().slice(0,10));}
-    const dots=last7.map(d=>{
-      const lv=lm[d];const dow=parseLocal(d).getDay();
-      const isOff=e.offday!==''&&e.offday!==undefined&&dow===parseInt(e.offday);
-      const hasPerm=!!pm[d];
-      const bg=lv?'#fca5a5':isMerc(d)?'#fcd34d':isOff?'#c4b5fd':hasPerm?'#fed7aa':'#e8e8e6';
-      return `<div class="mini-dot" title="${d}" style="background:${bg}"></div>`;
-    }).join('');
-    return `<div class="emp-card${selectedEmpId===e.id?' active':''}" onclick="selectEmployee(${e.id})">
-      <div class="emp-head">
-        <div class="avatar" style="background:${abg(e.id)};color:${afg(e.id)}">${ini(e.name)}</div>
-        <div style="flex:1;min-width:0">
-          <div class="emp-name">${e.name}${odb}</div>
-          <div class="emp-meta">${tb}<span>${e.code} &middot; ${e.dept}</span></div>
-        </div>
-        <button class="btn sm" onclick="event.stopPropagation();openEmpModal(${e.id})">Edit</button>
-      </div>
-      <div class="leave-pills">${pills+halfPill+permPill||'<span style="font-size:12px;color:#ccc">No records</span>'}</div>
-      <div class="mini-bar">${dots}</div>
-    </div>`;
-  }).join('');
-}
-
-function renderCalendar(){
-  const e=employees.find(x=>x.id===selectedEmpId);
-  if(!e){document.getElementById('calSection').style.display='none';return;}
-  document.getElementById('calSection').style.display='block';
-  const offday=e.offday!==''&&e.offday!==undefined?parseInt(e.offday):null;
-  document.getElementById('calEmpName').textContent=e.name;
-  document.getElementById('calEmpSub').innerHTML=
-    `${e.code} &middot; ${e.dept} &middot; <span class="badge ${e.empType==='part-time'?'parttime':'fulltime'}">${e.empType||'full-time'}</span>`+
-    (offday!==null?` &nbsp;&middot;&nbsp; <span style="color:#5b21b6">Weekly off: ${DAY_NAMES[offday]}</span>`:'');
-  document.getElementById('calMonthLabel').textContent=new Date(calY,calM,1).toLocaleString('default',{month:'long',year:'numeric'});
-  const lm=leavemap(e.id);
-  const pm=permmap(e.id);
-  const fd=new Date(calY,calM,1).getDay();
-  const dim=new Date(calY,calM+1,0).getDate();
-  const today=new Date().toISOString().slice(0,10);
-  let mL={annual:0,sick:0,casual:0,unpaid:0},mHalf=0,mO=0,mH=0,mP=0;
-  for(let d=1;d<=dim;d++){
-    const ds=`${calY}-${String(calM+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-    const dow=parseLocal(ds).getDay();
-    const lv=lm[ds];
-    if(lv){if(lv.half)mHalf+=0.5;else mL[lv.type]=(mL[lv.type]||0)+1;}
-    else if(offday!==null&&dow===offday)mO++;
-    else if(isMerc(ds))mH++;
-    if(pm[ds])mP++;
-  }
-  const totalLeave=Object.values(mL).reduce((a,b)=>a+b,0)+mHalf;
-  const leaveChip=totalLeave>0?`<span class="ms-chip" style="background:#fee2e2;color:#991b1b">${totalLeave} leave day${totalLeave!==1?'s':''}</span>`:'';
-  const offChip=mO>0?`<span class="ms-chip" style="background:#ede9fe;color:#5b21b6">${mO} weekly off</span>`:'';
-  const holChip=mH>0?`<span class="ms-chip" style="background:#fff3e0;color:#b45309">${mH} holiday${mH>1?'s':''}</span>`:'';
-  const permChip=mP>0?`<span class="ms-chip" style="background:#fff7ed;color:#9a3412">${mP} permission${mP>1?'s':''}</span>`:'';
-  document.getElementById('calMonthSummary').innerHTML=leaveChip+offChip+holChip+permChip||'<span style="font-size:12px;color:#bbb">No records this month</span>';
-
-  let html=DAY_SHORT.map(d=>`<div class="cal-day-name">${d}</div>`).join('');
-  for(let i=0;i<fd;i++)html+=`<div class="cal-cell empty"></div>`;
-  for(let d=1;d<=dim;d++){
-    const ds=`${calY}-${String(calM+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-    const lv=lm[ds];
-    const dow=parseLocal(ds).getDay();
-    const isOff=offday!==null&&dow===offday&&!lv;
-    const isH=!lv&&!isOff&&isMerc(ds);
-    const hasPerm=!!pm[ds];
-    const isToday=ds===today;
-    let cls='cal-cell';
-    if(lv)cls+=lv.half?' leave-half':` leave-${lv.type}`;
-    else if(isOff)cls+=' offday';
-    else if(isH)cls+=' mercantile';
-    else if(dow===0||dow===6)cls+=' weekend';
-    if(hasPerm)cls+=' has-perm';
-    if(isToday)cls+=' today';
-    const tipArr=[];
-    if(lv)tipArr.push(lv.half?`${lv.half} half ${lv.type} leave`:`${lv.type} leave`);
-    if(isH)tipArr.push(MERC[ds]);
-    if(hasPerm)tipArr.push('Permission: '+(pm[ds].reason||''));
-    const title=tipArr.length?` title="${tipArr.join(' | ')}"` :'';
-    const sub=lv?(lv.half?`<div class="cal-cell-sub">${lv.half==='first'?'1H':'2H'}</div>`:`<div class="cal-cell-sub">${lv.type.slice(0,2)}</div>`):
-      isOff?`<div class="cal-cell-sub">off</div>`:isH?`<div class="cal-cell-sub">hol</div>`:'';
-    html+=`<div class="${cls}"${title} onclick="calClick('${ds}')">${d}${sub}</div>`;
-  }
-  document.getElementById('calGrid').innerHTML=html;
-
-  // Permissions list
-  const monthPerms=permissions.filter(p=>{
-    if(p.empId!==e.id)return false;
-    const f=parseLocal(p.date);
-    return f.getFullYear()===calY&&f.getMonth()===calM;
-  }).sort((a,b)=>a.date.localeCompare(b.date));
-  const permListEl=document.getElementById('calPermList');
-  const permItemsEl=document.getElementById('calPermItems');
-  permListEl.style.display='block';
-  if(monthPerms.length>0){
-    permItemsEl.innerHTML=monthPerms.map(p=>`
-      <div class="perm-item">
-        <div class="perm-item-date">${fmt(p.date)}</div>
-        <div class="perm-item-times">${[p.timeIn,p.timeOut].filter(Boolean).join(' → ')||'—'}</div>
-        <div class="perm-item-reason">${p.reason||'—'}</div>
-        <button class="btn xs" onclick="openPermModal(${p.id})">Edit</button>
-        <button class="btn xs danger" onclick="deletePermissionById(${p.id})">Del</button>
-      </div>`).join('');
+function sendWA(groupUrl,message){
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(message).then(function(){window.open(groupUrl,'_blank');}).catch(function(){window.open(groupUrl,'_blank');});
   } else {
-    permItemsEl.innerHTML='<div style="font-size:12px;color:#bbb;padding:4px 0">No permissions this month</div>';
+    var ta=document.createElement('textarea');ta.value=message;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.focus();ta.select();
+    try{document.execCommand('copy');}catch(e){}
+    document.body.removeChild(ta);window.open(groupUrl,'_blank');
   }
 }
 
-function renderAll(){renderStats();renderEmployees();renderCalendar();}
+function openApp(app){currentApp=app;document.getElementById('home').style.display='none';document.getElementById('pin-screen').style.display='flex';document.getElementById('pin-input').value='';document.getElementById('pin-err').style.display='none';setTimeout(function(){document.getElementById('pin-input').focus();},300);}
+function checkPin(){if(document.getElementById('pin-input').value===PIN){document.getElementById('pin-screen').style.display='none';document.querySelectorAll('.app').forEach(function(a){a.style.display='none';});var el=document.getElementById('app-'+currentApp);el.style.display='flex';if(currentApp==='warranty')wLoadList();if(currentApp==='pickme')pmLoadList();}else{document.getElementById('pin-err').style.display='block';document.getElementById('pin-input').value='';}}
+document.getElementById('pin-input').addEventListener('keydown',function(e){if(e.key==='Enter')checkPin();});
+function goHome(){document.querySelectorAll('.app').forEach(function(a){a.style.display='none';});document.getElementById('pin-screen').style.display='none';document.getElementById('home').style.display='flex';}
+function switchTab(app,tab,btn){var prefix=app==='warranty'?'w':app==='pickme'?'pm':'dt';var appEl=document.getElementById('app-'+app);appEl.querySelectorAll('.tab').forEach(function(b){b.classList.remove('active');});appEl.querySelectorAll('.panel').forEach(function(p){p.classList.remove('active');});if(btn)btn.classList.add('active');document.getElementById(prefix+'-panel-'+tab).classList.add('active');if(app==='warranty'&&tab==='list')wLoadList();if(app==='pickme'&&tab==='list')pmLoadList();}
 
-function selectEmployee(id){
-  selectedEmpId=selectedEmpId===id?null:id;
-  if(selectedEmpId){calY=new Date().getFullYear();calM=new Date().getMonth();}
-  renderAll();
-  if(selectedEmpId)setTimeout(()=>document.getElementById('calSection').scrollIntoView({behavior:'smooth',block:'nearest'}),80);
-}
-function shiftMonth(d){calM+=d;if(calM<0){calM=11;calY--;}if(calM>11){calM=0;calY++;}renderCalendar();}
-function calClick(ds){
-  const e=employees.find(x=>x.id===selectedEmpId);
-  if(e&&e.offday!==''&&e.offday!==undefined&&parseLocal(ds).getDay()===parseInt(e.offday))return;
-  openLeaveModal(null);
-  if(selectedEmpId)document.getElementById('lv_emp').value=selectedEmpId;
-  document.getElementById('lv_from').value=ds;
-  document.getElementById('lv_to').value=ds;
-  updateLeaveSummary();
+function formatDate(d){if(!d||d==='')return'—';try{var x=new Date(d);if(isNaN(x.getTime()))return d;return x.getDate()+'/'+(x.getMonth()+1)+'/'+x.getFullYear();}catch(e){return d;}}
+function isHoliday(d){var s=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');return HOLIDAYS.indexOf(s)>=0;}
+function isBusinessDay(d){var day=d.getDay();return day!==0&&day!==6&&!isHoliday(d);}
+function nextBD(d){var n=new Date(d);n.setDate(n.getDate()+1);while(!isBusinessDay(n))n.setDate(n.getDate()+1);return n;}
+function getHandoverDate(s){try{var p=s.split(' ');var dp=p[0].split('/');var tp=p[1]?p[1].split(':'):['0','0','0'];var d=new Date(parseInt(dp[2]),parseInt(dp[1])-1,parseInt(dp[0]),parseInt(tp[0]),parseInt(tp[1]),parseInt(tp[2]));return(isBusinessDay(d)&&d.getHours()*60+d.getMinutes()<=15*60+30)?d:nextBD(d);}catch(e){return null;}}
+function localDateStr(d){if(!d)return null;return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function todayLocalStr(){return localDateStr(new Date());}
+function fetchSheet(sid,sname){var url='https://docs.google.com/spreadsheets/d/'+sid+'/gviz/tq?tqx=out:json&sheet='+encodeURIComponent(sname);return fetch(url).then(function(r){return r.text();}).then(function(t){var j=JSON.parse(t.substring(47,t.length-2));return j.table.rows;});}
+function gc(row,idx){var c=row.c[idx];if(!c||c.v===null)return'';if(c.f)return c.f;return String(c.v);}
+function callScript(data){return fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',body:JSON.stringify(data)});}
+function handlePhotos(input,store,previewId,countId){while(store.length>0)store.pop();document.getElementById(previewId).innerHTML='';var files=Array.from(input.files).slice(0,3);if(!files.length)return;var done=0;files.forEach(function(file){var reader=new FileReader();reader.onload=function(e){store.push({data:e.target.result.split(',')[1],type:file.type,ext:'jpg',preview:e.target.result});done++;if(done===files.length){renderPreviews(store,previewId);document.getElementById(countId).textContent=store.length+' photo'+(store.length>1?'s':'')+' added';}};reader.readAsDataURL(file);});}
+function renderPreviews(store,previewId){var p=document.getElementById(previewId);p.innerHTML='';store.forEach(function(photo,idx){var d=document.createElement('div');d.className='preview-thumb';d.innerHTML='<img src="'+photo.preview+'"><button class="rm" onclick="removePhotoFrom('+idx+',\''+previewId+'\')">✕</button>';p.appendChild(d);});}
+function removePhotoFrom(idx,pid){var s=pid==='w-preview'?wAddPhotos:wUpdPhotos;s.splice(idx,1);renderPreviews(s,pid);}
+
+// WARRANTY
+var W_STATUSES=['Received for Repair','Handed over to Tech','Ready for Collection','Completed/Dispatched'];
+var W_CLASSES=['s0','s1','s2','s3'];
+function wbc(s){var i=W_STATUSES.indexOf(s);return i>=0?W_CLASSES[i]:'s0';}
+document.getElementById('w-upload-area').addEventListener('click',function(){document.getElementById('w-photos').click();});
+document.getElementById('w-u-upload-area').addEventListener('click',function(){document.getElementById('w-u-photos').click();});
+document.getElementById('w-photos').addEventListener('change',function(){handlePhotos(this,wAddPhotos,'w-preview','w-count');});
+document.getElementById('w-u-photos').addEventListener('change',function(){handlePhotos(this,wUpdPhotos,'w-u-preview','w-u-count');});
+document.getElementById('w-s-order').addEventListener('keydown',function(e){if(e.key==='Enter')wSearch('order');});
+document.getElementById('w-s-contact').addEventListener('keydown',function(e){if(e.key==='Enter')wSearch('contact');});
+
+function wLoadList(){
+  document.getElementById('w-list-loading').classList.remove('hidden');
+  document.getElementById('w-list-error').classList.add('hidden');
+  document.getElementById('w-active-list').innerHTML='';
+  document.getElementById('w-closed-list').innerHTML='';
+  fetchSheet(W_SHEET_ID,W_SHEET_NAME).then(function(rows){
+    document.getElementById('w-list-loading').classList.add('hidden');
+    var active=[],closed=[];
+    rows.forEach(function(row,i){
+      if(i===0)return;
+      var order=gc(row,1),model=gc(row,4),status=gc(row,7);
+      if(!order&&!model)return;
+      var t={order:order,issue:gc(row,2),date:gc(row,3),model:model,contact:gc(row,5),status:status};
+      if(status==='Completed/Dispatched')closed.push(t);else active.push(t);
+    });
+    renderWList(active,'w-active-list',false);
+    renderWList(closed.slice(-25).reverse(),'w-closed-list',true);
+  }).catch(function(){document.getElementById('w-list-loading').classList.add('hidden');document.getElementById('w-list-error').classList.remove('hidden');});
 }
 
-// ── Leave ─────────────────────────────────────────────────────
-function openLeaveModal(lvId){
-  editingLvId=lvId;
-  const sel=document.getElementById('lv_emp');
-  sel.innerHTML=employees.map(e=>`<option value="${e.id}">${e.name} (${e.code})</option>`).join('');
-  if(lvId){
-    const l=leaves.find(x=>x.id===lvId);
-    document.getElementById('leaveModalTitle').textContent='Edit leave';
-    sel.value=l.empId;document.getElementById('lv_type').value=l.type;
-    document.getElementById('lv_half').value=l.half||'';
-    document.getElementById('lv_from').value=l.from;document.getElementById('lv_to').value=l.to;
-    document.getElementById('lv_note').value=l.note||'';
-  } else {
-    document.getElementById('leaveModalTitle').textContent='Log leave';
-    if(selectedEmpId)sel.value=selectedEmpId;
-    ['lv_from','lv_to','lv_note'].forEach(id=>document.getElementById(id).value='');
-    document.getElementById('lv_half').value='';
-  }
-  document.getElementById('lv_err').style.display='none';
-  document.getElementById('leaveModal').classList.add('open');
-  updateLeaveSummary();
+function wSwitchList(v){
+  document.getElementById('w-ltab-active').classList.toggle('active',v==='active');
+  document.getElementById('w-ltab-closed').classList.toggle('active',v==='closed');
+  document.getElementById('w-active-list').classList.toggle('hidden',v!=='active');
+  document.getElementById('w-closed-list').classList.toggle('hidden',v!=='closed');
 }
-function closeLeaveModal(){document.getElementById('leaveModal').classList.remove('open');document.getElementById('lv_summary').style.display='none';editingLvId=null;}
-function updateLeaveSummary(){
-  const from=document.getElementById('lv_from').value;
-  const to=document.getElementById('lv_to').value;
-  const empId=parseInt(document.getElementById('lv_emp').value);
-  const half=document.getElementById('lv_half').value;
-  const el=document.getElementById('lv_summary');
-  if(!from||!to||from>to){el.style.display='none';return;}
-  const emp=employees.find(e=>e.id===empId);
-  const days=range(from,to);
-  const offD=emp&&emp.offday!==''&&emp.offday!==undefined?days.filter(d=>parseLocal(d).getDay()===parseInt(emp.offday)).length:0;
-  const mercD=days.filter(d=>isMerc(d)).length;
-  let txt=half?`Half day (${half} half) — 0.5 leave day`:
-    `${days.length} calendar day${days.length!==1?'s':''}`;
-  if(!half){
-    const notes=[];
-    if(offD>0)notes.push(`${offD} weekly off`);
-    if(mercD>0)notes.push(`${mercD} mercantile holiday${mercD>1?'s':''}`);
-    if(notes.length)txt+=` — includes ${notes.join(' & ')}`;
-    if(offD>0){const wd=days.length-offD;txt+=` — ${wd} working day${wd!==1?'s':''} of leave`;}
-  }
-  el.textContent=txt;el.style.display='block';
-}
-async function saveLeave(){
-  const empId=parseInt(document.getElementById('lv_emp').value);
-  const type=document.getElementById('lv_type').value;
-  const half=document.getElementById('lv_half').value;
-  const from=document.getElementById('lv_from').value;
-  const to=document.getElementById('lv_to').value;
-  const note=document.getElementById('lv_note').value;
-  const err=document.getElementById('lv_err');
-  if(!from||!to){err.style.display='block';err.textContent='Please select both dates.';return;}
-  if(from>to){err.style.display='block';err.textContent='"From" must be before "To".';return;}
-  err.style.display='none';
-  const btn=document.getElementById('saveLvBtn');btn.disabled=true;
-  spinner(true,'Saving leave…');
-  try{
-    const data={empId,type,half,from,to,note};
-    if(editingLvId)data.id=editingLvId;
-    const res=await apiPost({action:'saveLeave',data});
-    if(!editingLvId){leaves.push({id:res.id,empId,type,half,from,to,note});nextLvId=res.id+1;}
-    else{const l=leaves.find(x=>x.id===editingLvId);if(l){l.empId=empId;l.type=type;l.half=half;l.from=from;l.to=to;l.note=note;}}
-    closeLeaveModal();renderAll();if(activeTab==='report')renderReport();
-    showToast(editingLvId?'Leave updated':'Leave saved');
-  }catch(e){showToast('Save failed: '+e.message,true);}
-  finally{btn.disabled=false;spinner(false);}
-}
-async function deleteLeave(id){
-  showConfirm('Remove this leave entry?','This cannot be undone.',async()=>{
-    spinner(true,'Removing…');
-    try{await apiPost({action:'deleteLeave',id});leaves=leaves.filter(l=>l.id!==id);renderAll();renderReport();showToast('Leave removed');}
-    catch(e){showToast('Error: '+e.message,true);}finally{spinner(false);}
+
+function renderWList(tickets,containerId,isClosed){
+  var container=document.getElementById(containerId);container.innerHTML='';
+  if(!tickets.length){container.innerHTML='<div class="empty-state">No tickets</div>';return;}
+  tickets.forEach(function(t){
+    var div=document.createElement('div');
+    div.className='ticket-item'+(isClosed?' closed':'');
+    div.innerHTML='<div class="ti-main"><div class="ti-top"><div><div class="ti-order">'+t.order+'</div><div class="ti-model">'+t.model+'</div></div><button class="status-badge '+wbc(t.status)+'" onclick="wToggleEdit(this,\''+t.order+'\',\''+t.status+'\',event)">'+t.status+'</button></div><div class="ti-issue">'+(t.issue||'')+'</div><div class="ti-bottom"><span class="ti-date">'+formatDate(t.date)+'</span><span class="ti-date">'+(t.contact||'')+'</span></div></div>'
+      +'<div class="ti-status-edit"><div class="se-label">Update status</div><div class="se-row"><select class="se-select">'+W_STATUSES.map(function(s){return'<option'+(s===t.status?' selected':'')+'>'+s+'</option>';}).join('')+'</select><button class="se-save" onclick="wInlineSave(this,\''+t.order+'\',event)">Update &amp; Notify</button><button class="se-del" onclick="wInlineDelete(this,\''+t.order+'\',event)">🗑</button></div><div class="se-cancel" onclick="wCloseEdit(this,event)">Cancel</div></div>';
+    container.appendChild(div);
   });
 }
 
-// ── Permissions ───────────────────────────────────────────────
-function openPermModal(pmId){
-  editingPermId=pmId;
-  const sel=document.getElementById('pm_emp');
-  sel.innerHTML=employees.map(e=>`<option value="${e.id}">${e.name} (${e.code})</option>`).join('');
-  const delBtn=document.getElementById('permDeleteBtn');
-  if(pmId){
-    const p=permissions.find(x=>x.id===pmId);
-    document.getElementById('permModalTitle').textContent='Edit permission';
-    sel.value=p.empId;
-    document.getElementById('pm_date').value=p.date;
-    document.getElementById('pm_timein').value=p.timeIn||'';
-    document.getElementById('pm_timeout').value=p.timeOut||'';
-    document.getElementById('pm_reason').value=p.reason||'';
-    delBtn.style.display='';
-  } else {
-    document.getElementById('permModalTitle').textContent='Log permission';
-    if(selectedEmpId)sel.value=selectedEmpId;
-    ['pm_date','pm_timein','pm_timeout','pm_reason'].forEach(id=>document.getElementById(id).value='');
-    delBtn.style.display='none';
-  }
-  document.getElementById('pm_err').style.display='none';
-  document.getElementById('permModal').classList.add('open');
+function wToggleEdit(btn,order,status,e){e.stopPropagation();var card=btn.closest('.ticket-item');var ea=card.querySelector('.ti-status-edit');var isOpen=ea.classList.contains('open');document.querySelectorAll('.ti-status-edit.open').forEach(function(a){a.classList.remove('open');});if(!isOpen)ea.classList.add('open');}
+function wCloseEdit(el,e){e.stopPropagation();el.closest('.ti-status-edit').classList.remove('open');}
+
+function wInlineDelete(btn,order,e){
+  e.stopPropagation();
+  if(!confirm('Delete ticket '+order+'? This cannot be undone.'))return;
+  btn.textContent='...';btn.disabled=true;
+  callScript({action:'deleteWarranty',order:order}).then(function(){
+    var card=btn.closest('.ticket-item');
+    card.style.transition='opacity 0.3s';card.style.opacity='0';
+    setTimeout(function(){card.remove();},300);
+  }).catch(function(){btn.textContent='🗑';btn.disabled=false;alert('Delete failed. Try again.');});
 }
-function closePermModal(){document.getElementById('permModal').classList.remove('open');editingPermId=null;}
-async function savePermission(){
-  const empId=parseInt(document.getElementById('pm_emp').value);
-  const date=document.getElementById('pm_date').value;
-  const timeIn=document.getElementById('pm_timein').value;
-  const timeOut=document.getElementById('pm_timeout').value;
-  const reason=document.getElementById('pm_reason').value;
-  const err=document.getElementById('pm_err');
-  if(!date){err.style.display='block';err.textContent='Please select a date.';return;}
-  err.style.display='none';
-  const btn=document.getElementById('savePermBtn');btn.disabled=true;
-  spinner(true,'Saving permission…');
-  try{
-    const data={empId,date,timeIn,timeOut,reason};
-    if(editingPermId)data.id=editingPermId;
-    const res=await apiPost({action:'savePermission',data});
-    if(!editingPermId){
-      permissions.push({id:res.id,empId,date,timeIn,timeOut,reason});
-      nextPermId=res.id+1;
-    } else {
-      const p=permissions.find(x=>x.id===editingPermId);
-      if(p){p.empId=empId;p.date=date;p.timeIn=timeIn;p.timeOut=timeOut;p.reason=reason;}
-    }
-    closePermModal();renderAll();if(activeTab==='permissions')renderPermReport();
-    showToast(editingPermId?'Permission updated':'Permission saved');
-  }catch(e){showToast('Save failed: '+e.message,true);}
-  finally{btn.disabled=false;spinner(false);}
+
+function wInlineSave(btn,order,e){
+  e.stopPropagation();
+  var card=btn.closest('.ticket-item');
+  var newStatus=card.querySelector('.se-select').value;
+  btn.textContent='Saving...';btn.disabled=true;
+  callScript({action:'updateStatus',order:order,status:newStatus,photos:[]}).then(function(){
+    var badge=card.querySelector('.status-badge');
+    badge.textContent=newStatus;badge.className='status-badge '+wbc(newStatus);
+    card.querySelector('.ti-status-edit').classList.remove('open');
+    btn.textContent='Update & Notify';btn.disabled=false;
+    if(newStatus==='Completed/Dispatched')card.classList.add('closed');else card.classList.remove('closed');
+    sendWA(W_WA_GROUP,'🔧 *Warranty Status Update*\nOrder: '+order+'\nNew Status: '+newStatus);
+  }).catch(function(){btn.textContent='Update & Notify';btn.disabled=false;});
 }
-function deletePermissionEdit(){
-  // Delete from edit modal
-  if(!editingPermId)return;
-  const id=editingPermId;
-  closePermModal();
-  showConfirm('Remove this permission?','This cannot be undone.',async()=>{
-    spinner(true,'Removing…');
-    try{await apiPost({action:'deletePermission',id});permissions=permissions.filter(p=>p.id!==id);renderAll();renderPermReport();showToast('Permission removed');}
-    catch(e){showToast('Error: '+e.message,true);}finally{spinner(false);}
-  });
-}
-async function deletePermissionById(id){
-  showConfirm('Remove this permission?','This cannot be undone.',async()=>{
-    spinner(true,'Removing…');
-    try{await apiPost({action:'deletePermission',id});permissions=permissions.filter(p=>p.id!==id);renderAll();renderPermReport();showToast('Permission removed');}
-    catch(e){showToast('Error: '+e.message,true);}finally{spinner(false);}
+
+function wSearch(type){
+  var q=document.getElementById(type==='order'?'w-s-order':'w-s-contact').value.trim();if(!q)return;
+  document.getElementById('w-s-loading').classList.remove('hidden');
+  document.getElementById('w-s-result').classList.add('hidden');
+  document.getElementById('w-s-notfound').classList.add('hidden');
+  fetchSheet(W_SHEET_ID,W_SHEET_NAME).then(function(rows){
+    document.getElementById('w-s-loading').classList.add('hidden');
+    var colIdx=type==='order'?1:5,found=false;
+    rows.forEach(function(row,i){
+      if(i===0||found)return;
+      if(gc(row,colIdx).toLowerCase().trim()===q.toLowerCase().trim()){
+        var d={order:gc(row,1),issue:gc(row,2),date:gc(row,3),model:gc(row,4),contact:gc(row,5),warranty:gc(row,6),status:gc(row,7),remarks:gc(row,8),photos:gc(row,9)};
+        wCurOrder=d.order;
+        document.getElementById('w-sr-order').textContent='Order: '+d.order;
+        document.getElementById('w-sr-model').textContent=d.model||'—';
+        document.getElementById('w-sr-issue').textContent=d.issue||'—';
+        document.getElementById('w-sr-date').textContent=formatDate(d.date);
+        document.getElementById('w-sr-contact').textContent=d.contact||'—';
+        document.getElementById('w-sr-warranty').textContent=d.warranty||'—';
+        document.getElementById('w-sr-remarks').textContent=d.remarks||'—';
+        var ph=document.getElementById('w-sr-photos');
+        if(d.photos&&d.photos.trim()&&d.photos.indexOf('ERROR')===-1){ph.innerHTML=d.photos.split(', ').filter(Boolean).map(function(l,i){return'<a href="'+l+'" target="_blank">Photo '+(i+1)+'</a>';}).join('');}else{ph.textContent='No photos';}
+        var sel=document.getElementById('w-u-status');
+        for(var j=0;j<sel.options.length;j++){if(sel.options[j].value===d.status){sel.selectedIndex=j;break;}}
+        document.getElementById('w-u-msg').classList.add('hidden');
+        document.getElementById('w-s-result').classList.remove('hidden');found=true;
+      }
+    });
+    if(!found)document.getElementById('w-s-notfound').classList.remove('hidden');
   });
 }
 
-function renderPermReport(){
-  const empSel=document.getElementById('prpt_emp');
-  const curE=empSel.value;
-  empSel.innerHTML='<option value="">All employees</option>'+employees.map(e=>`<option value="${e.id}"${String(e.id)===curE?' selected':''}>${e.name}</option>`).join('');
-  const yrSel=document.getElementById('prpt_year');
-  const yrs=[...new Set(permissions.map(p=>p.date?p.date.slice(0,4):'').filter(Boolean))].sort().reverse();
-  if(!yrs.includes(String(new Date().getFullYear())))yrs.unshift(String(new Date().getFullYear()));
-  const curY=yrSel.value||String(new Date().getFullYear());
-  yrSel.innerHTML='<option value="">All years</option>'+yrs.map(y=>`<option${y===curY?' selected':''}>${y}</option>`).join('');
-  const empId=empSel.value?parseInt(empSel.value):null;
-  const year=document.getElementById('prpt_year').value;
-  const month=document.getElementById('prpt_month').value;
-  let fil=permissions.filter(p=>{
-    if(!p.date)return false;
-    if(empId&&p.empId!==empId)return false;
-    if(year&&!p.date.startsWith(year))return false;
-    if(month!==''&&parseLocal(p.date).getMonth()!==parseInt(month))return false;
-    return true;
-  }).sort((a,b)=>b.date.localeCompare(a.date));
-  const body=document.getElementById('permReportBody');
-  if(!fil.length){body.innerHTML=`<tr><td colspan="7" style="text-align:center;padding:2rem;color:#aaa">No permissions found</td></tr>`;document.getElementById('permReportSummary').textContent='';return;}
-  body.innerHTML=fil.map(p=>{
-    const e=employees.find(x=>x.id===p.empId)||{name:'Unknown',code:'-'};
-    return `<tr>
-      <td><strong>${e.name}</strong></td><td style="color:#888">${e.code}</td>
-      <td>${fmt(p.date)}</td><td>${p.timeIn||'—'}</td><td>${p.timeOut||'—'}</td>
-      <td style="color:#888">${p.reason||'—'}</td>
-      <td style="white-space:nowrap">
-        <button class="btn xs" onclick="openPermModal(${p.id})">Edit</button>
-        <button class="btn xs danger" onclick="deletePermissionById(${p.id})" style="margin-left:4px">Del</button>
-      </td>
-    </tr>`;
-  }).join('');
-  document.getElementById('permReportSummary').textContent=`${fil.length} permission${fil.length!==1?'s':''}`;
+function wSave(){
+  var s=document.getElementById('w-u-status').value;
+  var msg=document.getElementById('w-u-msg'),btn=document.getElementById('w-save-btn');
+  btn.disabled=true;btn.textContent='Saving...';msg.classList.add('hidden');
+  var photos=wUpdPhotos.map(function(p){return{data:p.data,type:p.type,ext:p.ext};});
+  callScript({action:'updateStatus',order:wCurOrder,status:s,photos:photos}).then(function(){
+    btn.disabled=false;btn.textContent='Update & Notify';
+    msg.textContent='Status updated!';msg.className='msg ok';msg.classList.remove('hidden');
+    while(wUpdPhotos.length>0)wUpdPhotos.pop();
+    document.getElementById('w-u-preview').innerHTML='';document.getElementById('w-u-count').textContent='';
+    sendWA(W_WA_GROUP,'🔧 *Warranty Status Update*\nOrder: '+wCurOrder+'\nNew Status: '+s);
+  }).catch(function(){btn.disabled=false;btn.textContent='Update & Notify';msg.textContent='Error.';msg.className='msg err';msg.classList.remove('hidden');});
 }
 
-// ── Employees ─────────────────────────────────────────────────
-function openEmpModal(id){
-  editingEmpId=id;const isEdit=!!id;
-  document.getElementById('empModalTitle').textContent=isEdit?'Edit employee':'Add employee';
-  document.getElementById('empSaveBtn').textContent=isEdit?'Save changes':'Add employee';
-  document.getElementById('empDeleteBtn').style.display=isEdit?'':'none';
-  const sel=document.getElementById('em_dept');
-  sel.innerHTML=departments.map(d=>`<option>${d}</option>`).join('');
-  if(isEdit){
-    const e=employees.find(x=>x.id===id);
-    document.getElementById('em_name').value=e.name;
-    document.getElementById('em_code').value=e.code;
-    document.getElementById('em_type').value=e.empType||'full-time';
-    sel.value=e.dept;
-    document.getElementById('em_offday').value=e.offday!==undefined&&e.offday!==''?e.offday:'';
-  } else {
-    ['em_name','em_code'].forEach(i=>document.getElementById(i).value='');
-    document.getElementById('em_type').value='full-time';
-    document.getElementById('em_offday').value='';
-  }
-  document.getElementById('em_err').style.display='none';
-  document.getElementById('empModal').classList.add('open');
-}
-function closeEmpModal(){document.getElementById('empModal').classList.remove('open');editingEmpId=null;}
-async function saveEmployee(){
-  const name=document.getElementById('em_name').value.trim();
-  const code=document.getElementById('em_code').value.trim();
-  const dept=document.getElementById('em_dept').value;
-  const empType=document.getElementById('em_type').value;
-  const offday=document.getElementById('em_offday').value;
-  const err=document.getElementById('em_err');
-  if(!name||!code){err.style.display='block';err.textContent='Name and code are required.';return;}
-  if(!editingEmpId&&employees.find(e=>e.code.toLowerCase()===code.toLowerCase())){
-    err.style.display='block';err.textContent='Employee code already exists.';return;
-  }
-  err.style.display='none';
-  const btn=document.getElementById('empSaveBtn');btn.disabled=true;
-  spinner(true,'Saving employee…');
-  try{
-    const data={name,code,dept,empType,offday:offday===''?'':parseInt(offday)};
-    if(editingEmpId)data.id=editingEmpId;
-    const res=await apiPost({action:'saveEmployee',data});
-    if(editingEmpId){
-      const e=employees.find(x=>x.id===editingEmpId);
-      e.name=name;e.code=code;e.dept=dept;e.empType=empType;e.offday=offday===''?'':parseInt(offday);
-      showToast('Employee updated');
-    } else {
-      employees.push({id:res.id,name,code,dept,empType,offday:offday===''?'':parseInt(offday)});
-      nextEmpId=res.id+1;showToast('Employee added');
-    }
-    closeEmpModal();renderAll();
-  }catch(e){showToast('Save failed: '+e.message,true);}
-  finally{btn.disabled=false;spinner(false);}
-}
-async function deleteEmployee(){
-  showConfirm('Remove this employee?','All leave and permission records will also be removed.',async()=>{
-    spinner(true,'Removing…');
-    try{
-      await apiPost({action:'deleteEmployee',id:editingEmpId});
-      leaves=leaves.filter(l=>l.empId!==editingEmpId);
-      permissions=permissions.filter(p=>p.empId!==editingEmpId);
-      employees=employees.filter(e=>e.id!==editingEmpId);
-      if(selectedEmpId===editingEmpId)selectedEmpId=null;
-      closeEmpModal();renderAll();showToast('Employee removed');
-    }catch(e){showToast('Error: '+e.message,true);}finally{spinner(false);}
-  });
+function wDelete(){
+  if(!confirm('Delete ticket '+wCurOrder+'? This cannot be undone.'))return;
+  var btn=document.getElementById('w-del-btn'),msg=document.getElementById('w-u-msg');
+  btn.disabled=true;btn.textContent='Deleting...';msg.classList.add('hidden');
+  callScript({action:'deleteWarranty',order:wCurOrder}).then(function(){
+    document.getElementById('w-s-result').classList.add('hidden');
+    document.getElementById('w-s-notfound').classList.add('hidden');
+    msg.classList.add('hidden');
+    btn.disabled=false;btn.textContent='🗑 Delete Ticket';
+    wCurOrder=null;
+    alert('Ticket deleted.');
+  }).catch(function(){btn.disabled=false;btn.textContent='🗑 Delete Ticket';msg.textContent='Delete failed.';msg.className='msg err';msg.classList.remove('hidden');});
 }
 
-// ── Departments ───────────────────────────────────────────────
-function renderDepts(){
-  const list=document.getElementById('deptList');
-  if(!departments.length){list.innerHTML='<div class="no-data">No departments yet</div>';return;}
-  list.innerHTML=departments.map(d=>{
-    const c=employees.filter(e=>e.dept===d).length;
-    return `<div class="dept-item">
-      <div><div style="font-size:14px;font-weight:500">${d}</div><div style="font-size:12px;color:#999">${c} employee${c!==1?'s':''}</div></div>
-      <button class="btn xs danger" onclick="removeDept('${d.replace(/'/g,"\\'")}')">Remove</button>
-    </div>`;
-  }).join('');
-}
-function openDeptModal(){document.getElementById('dept_name').value='';document.getElementById('dept_err').style.display='none';document.getElementById('deptModal').classList.add('open');}
-function closeDeptModal(){document.getElementById('deptModal').classList.remove('open');}
-async function saveDept(){
-  const name=document.getElementById('dept_name').value.trim();
-  const err=document.getElementById('dept_err');
-  if(!name){err.style.display='block';err.textContent='Please enter a name.';return;}
-  if(departments.includes(name)){err.style.display='block';err.textContent='Already exists.';return;}
-  spinner(true,'Saving…');
-  try{await apiPost({action:'saveDept',name});departments.push(name);closeDeptModal();renderDepts();populateDeptFilter();showToast('Department added');}
-  catch(e){showToast('Error: '+e.message,true);}finally{spinner(false);}
-}
-async function removeDept(d){
-  const c=employees.filter(e=>e.dept===d).length;
-  showConfirm(`Remove "${d}"?`,c>0?`${c} employee${c!==1?'s':''} are in this department.`:'No employees here.',async()=>{
-    spinner(true,'Removing…');
-    try{await apiPost({action:'deleteDept',name:d});departments=departments.filter(x=>x!==d);renderDepts();populateDeptFilter();showToast('Department removed');}
-    catch(e){showToast('Error: '+e.message,true);}finally{spinner(false);}
-  });
+function wSubmit(){
+  var order=document.getElementById('w-order').value.trim(),date=document.getElementById('w-date').value,issue=document.getElementById('w-issue').value.trim(),model=document.getElementById('w-model').value.trim(),contact=document.getElementById('w-contact').value.trim(),warranty=document.getElementById('w-warranty').value,status=document.getElementById('w-status').value,remarks=document.getElementById('w-remarks').value.trim();
+  var msg=document.getElementById('w-add-msg'),btn=document.getElementById('w-add-btn');
+  if(!order||!date||!issue||!model||!contact||!warranty||!status){msg.textContent='Please fill in all required fields.';msg.className='msg err';msg.classList.remove('hidden');return;}
+  btn.disabled=true;btn.textContent='Submitting...';msg.classList.add('hidden');
+  var photos=wAddPhotos.map(function(p){return{data:p.data,type:p.type,ext:p.ext};});
+  callScript({action:'addTicket',order:order,date:date,issue:issue,model:model,contact:contact,warranty:warranty,status:status,remarks:remarks,photos:photos}).then(function(){
+    btn.disabled=false;btn.textContent='📲 Submit & Notify';
+    msg.textContent='Ticket submitted!';msg.className='msg ok';msg.classList.remove('hidden');
+    sendWA(W_WA_GROUP,'🔧 *New Warranty Ticket*\nOrder: '+order+'\nModel: '+model+'\nIssue: '+issue+'\nStatus: '+status+'\nDate: '+date);
+    ['w-order','w-date','w-issue','w-model','w-contact','w-remarks'].forEach(function(id){document.getElementById(id).value='';});
+    document.getElementById('w-warranty').selectedIndex=0;document.getElementById('w-status').selectedIndex=0;
+    while(wAddPhotos.length>0)wAddPhotos.pop();
+    document.getElementById('w-preview').innerHTML='';document.getElementById('w-count').textContent='';
+  }).catch(function(){btn.disabled=false;btn.textContent='📲 Submit & Notify';msg.textContent='Could not submit.';msg.className='msg err';msg.classList.remove('hidden');});
 }
 
-// ── Report ────────────────────────────────────────────────────
-function renderReport(){
-  const empSel=document.getElementById('rpt_emp');
-  const curE=empSel.value;
-  empSel.innerHTML='<option value="">All employees</option>'+employees.map(e=>`<option value="${e.id}"${String(e.id)===curE?' selected':''}>${e.name}</option>`).join('');
-  const yrSel=document.getElementById('rpt_year');
-  const yrs=[...new Set(leaves.map(l=>l.from.slice(0,4)))].sort().reverse();
-  if(!yrs.includes(String(new Date().getFullYear())))yrs.unshift(String(new Date().getFullYear()));
-  const curY=yrSel.value||String(new Date().getFullYear());
-  yrSel.innerHTML='<option value="">All years</option>'+yrs.map(y=>`<option${y===curY?' selected':''}>${y}</option>`).join('');
-  const empId=empSel.value?parseInt(empSel.value):null;
-  const type=document.getElementById('rpt_type').value;
-  const year=document.getElementById('rpt_year').value;
-  const month=document.getElementById('rpt_month').value;
-  let fil=leaves.filter(l=>{
-    if(empId&&l.empId!==empId)return false;
-    if(type&&l.type!==type)return false;
-    if(year&&!l.from.startsWith(year))return false;
-    if(month!==''&&parseLocal(l.from).getMonth()!==parseInt(month))return false;
-    return true;
-  }).sort((a,b)=>b.from.localeCompare(a.from));
-  const body=document.getElementById('reportBody');
-  if(!fil.length){body.innerHTML=`<tr><td colspan="9" style="text-align:center;padding:2rem;color:#aaa">No records found</td></tr>`;document.getElementById('reportSummary').textContent='';return;}
-  body.innerHTML=fil.map(l=>{
-    const e=employees.find(x=>x.id===l.empId)||{name:'Unknown',code:'-',dept:'-',empType:'-'};
-    const d=l.half?0.5:range(l.from,l.to).length;
-    return `<tr>
-      <td><strong>${e.name}</strong></td>
-      <td><span class="badge ${e.empType==='part-time'?'parttime':'fulltime'}">${e.empType||'full-time'}</span></td>
-      <td><span class="pill ${l.type}">${l.type}</span></td>
-      <td>${l.half?`<span style="font-size:11px;padding:2px 7px;border-radius:20px;background:#fecaca;color:#991b1b;font-weight:500">${l.half}</span>`:'—'}</td>
-      <td>${fmt(l.from)}</td><td>${fmt(l.to)}</td>
-      <td><strong>${d}d</strong></td>
-      <td style="color:#888;max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${l.note||'—'}</td>
-      <td style="white-space:nowrap">
-        <button class="btn xs" onclick="openLeaveModal(${l.id})">Edit</button>
-        <button class="btn xs danger" onclick="deleteLeave(${l.id})" style="margin-left:4px">Del</button>
-      </td>
-    </tr>`;
-  }).join('');
-  const tot=fil.reduce((s,l)=>s+(l.half?0.5:range(l.from,l.to).length),0);
-  document.getElementById('reportSummary').textContent=`${fil.length} record${fil.length!==1?'s':''} · ${tot} total day${tot!==1?'s':''}`;
-}
-
-// ── CSV Export ────────────────────────────────────────────────
-function exportCSV(){
-  const rows=[['Employee','Code','Department','Emp Type','Leave Type','Half Day','From','To','Days','Note']];
-  leaves.sort((a,b)=>a.from.localeCompare(b.from)).forEach(l=>{
-    const e=employees.find(x=>x.id===l.empId)||{name:'Unknown',code:'-',dept:'-',empType:'-'};
-    rows.push([e.name,e.code,e.dept,e.empType||'full-time',l.type,l.half||'full',fmt(l.from),fmt(l.to),l.half?0.5:range(l.from,l.to).length,l.note||'']);
-  });
-  rows.push([]);rows.push(['--- PERMISSIONS ---']);
-  rows.push(['Employee','Code','Date','Time In','Time Out','Reason']);
-  permissions.sort((a,b)=>a.date.localeCompare(b.date)).forEach(p=>{
-    const e=employees.find(x=>x.id===p.empId)||{name:'Unknown',code:'-'};
-    rows.push([e.name,e.code,fmt(p.date),p.timeIn||'',p.timeOut||'',p.reason||'']);
-  });
-  const csv=rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
-  a.download=`leave_report_${new Date().toISOString().slice(0,10)}.csv`;
-  a.click();showToast('CSV downloaded');
-}
-
-// ── Confirm ───────────────────────────────────────────────────
-function showConfirm(title,msg,cb){
-  confirmCb=cb;
-  document.getElementById('confirmTitle').textContent=title;
-  document.getElementById('confirmMsg').textContent=msg;
-  document.getElementById('confirmModal').classList.add('open');
-}
-function closeConfirm(){document.getElementById('confirmModal').classList.remove('open');confirmCb=null;}
-document.getElementById('confirmOkBtn').onclick=function(){if(confirmCb)confirmCb();closeConfirm();};
-
-[['leaveModal',()=>closeLeaveModal()],['permModal',()=>closePermModal()],
- ['empModal',()=>closeEmpModal()],['deptModal',()=>closeDeptModal()],
- ['confirmModal',()=>closeConfirm()]].forEach(([id,fn])=>{
-  document.getElementById(id).addEventListener('click',function(e){if(e.target===this)fn();});
+// PICKME
+var PM_STATUSES=['To be Processed','Package Ready','Delivered/Completed'];
+var PM_CLASSES=['pm-badge-to','pm-badge-ready','pm-badge-done'];
+function pmbc(s){var i=PM_STATUSES.indexOf(s);return i>=0?PM_CLASSES[i]:'pm-badge-to';}
+document.getElementById('pm-s-order').addEventListener('keydown',function(e){if(e.key==='Enter')pmSearch();});
+document.getElementById('pm-u-status').addEventListener('change',function(){
+  var isDelivered=this.value==='Delivered/Completed';
+  document.getElementById('pm-delivery-charge').classList.toggle('hidden',!isDelivered);
+  document.getElementById('pm-amount-field').classList.add('hidden');
+  document.getElementById('pm-charge-payer').selectedIndex=0;
+});
+document.getElementById('pm-charge-payer').addEventListener('change',function(){
+  document.getElementById('pm-amount-field').classList.toggle('hidden',this.value!=='We Paid');
 });
 
-loadAll();
+function pmLoadList(){
+  document.getElementById('pm-list-loading').classList.remove('hidden');
+  document.getElementById('pm-list-error').classList.add('hidden');
+  document.getElementById('pm-active-list').innerHTML='';
+  document.getElementById('pm-closed-list').innerHTML='';
+  fetchSheet(W_SHEET_ID,PM_SHEET_NAME).then(function(rows){
+    document.getElementById('pm-list-loading').classList.add('hidden');
+    var active=[],closed=[];
+    rows.forEach(function(row,i){
+      if(i===0)return;
+      var order=gc(row,1);if(!order)return;
+      var t={order:order,due:gc(row,2),status:gc(row,3),chargePaidBy:gc(row,4),amountPaid:gc(row,5)};
+      if(t.status==='Delivered/Completed')closed.push(t);else active.push(t);
+    });
+    renderPMList(active,'pm-active-list',false);
+    renderPMList(closed.slice(-25).reverse(),'pm-closed-list',true);
+  }).catch(function(){document.getElementById('pm-list-loading').classList.add('hidden');document.getElementById('pm-list-error').classList.remove('hidden');});
+}
+
+function pmSwitchList(v){
+  document.getElementById('pm-ltab-active').classList.toggle('active',v==='active');
+  document.getElementById('pm-ltab-closed').classList.toggle('active',v==='closed');
+  document.getElementById('pm-active-list').classList.toggle('hidden',v!=='active');
+  document.getElementById('pm-closed-list').classList.toggle('hidden',v!=='closed');
+}
+
+function renderPMList(tickets,containerId,isClosed){
+  var container=document.getElementById(containerId);container.innerHTML='';
+  if(!tickets.length){container.innerHTML='<div class="empty-state">No tickets</div>';return;}
+  tickets.forEach(function(t){
+    var div=document.createElement('div');
+    div.className='ticket-item'+(isClosed?' closed':'');
+    var extraInfo='';
+    if(t.chargePaidBy)extraInfo+='<div class="ti-issue">Delivery: '+t.chargePaidBy+(t.amountPaid?' — LKR '+t.amountPaid:'')+'</div>';
+    div.innerHTML='<div class="ti-main"><div class="ti-top"><div><div class="ti-order">'+t.order+'</div><div class="ti-model">Due: '+formatDate(t.due)+'</div></div><button class="status-badge '+pmbc(t.status)+'" onclick="pmToggleEdit(this,\''+t.order+'\',\''+t.status+'\',\''+t.due+'\',event)">'+t.status+'</button></div>'+extraInfo+'</div>'
+      +'<div class="ti-status-edit">'
+      +'<div class="se-label">Update status</div>'
+      +'<div class="se-row"><select class="se-select">'+PM_STATUSES.map(function(s){return'<option'+(s===t.status?' selected':'')+'>'+s+'</option>';}).join('')+'</select><button class="se-save" onclick="pmInlineSave(this,\''+t.order+'\',event)">Update &amp; Notify</button><button class="se-del" onclick="pmInlineDelete(this,\''+t.order+'\',event)">🗑</button></div>'
+      +'<div class="pm-inline-charge field hidden" style="margin-top:0.75rem"><label>Who paid delivery charge?</label><select class="pm-inline-payer"><option value="">Select...</option><option>We Paid</option><option>Customer Paid</option></select></div>'
+      +'<div class="pm-inline-amount field hidden" style="margin-top:0.5rem"><label>Amount we paid (LKR)</label><input type="number" class="pm-inline-amount-input" placeholder="e.g. 350"></div>'
+      +'<div class="se-label" style="margin-top:0.75rem">Change due date</div>'
+      +'<div class="se-row"><input type="date" class="pm-inline-due" style="flex:1;height:42px;padding:0 10px;border:1.5px solid #ddd;border-radius:8px;font-size:14px"><button class="se-save" style="background:#1a1a2e;border-color:#1a1a2e" onclick="pmInlineSaveDue(this,\''+t.order+'\',event)">Save Date</button></div>'
+      +'<div class="se-cancel" onclick="pmCloseEdit(this,event)">Cancel</div>'
+      +'</div>';
+    var sel=div.querySelector('.se-select');
+    sel.addEventListener('change',function(){
+      var isD=this.value==='Delivered/Completed';
+      div.querySelector('.pm-inline-charge').classList.toggle('hidden',!isD);
+      div.querySelector('.pm-inline-amount').classList.add('hidden');
+      div.querySelector('.pm-inline-payer').selectedIndex=0;
+    });
+    var payer=div.querySelector('.pm-inline-payer');
+    payer.addEventListener('change',function(){
+      div.querySelector('.pm-inline-amount').classList.toggle('hidden',this.value!=='We Paid');
+    });
+    container.appendChild(div);
+  });
+}
+
+function pmToggleEdit(btn,order,status,due,e){e.stopPropagation();var card=btn.closest('.ticket-item');var ea=card.querySelector('.ti-status-edit');var isOpen=ea.classList.contains('open');document.querySelectorAll('.ti-status-edit.open').forEach(function(a){a.classList.remove('open');});if(!isOpen){ea.classList.add('open');}}
+function pmCloseEdit(el,e){e.stopPropagation();el.closest('.ti-status-edit').classList.remove('open');}
+
+function pmInlineDelete(btn,order,e){
+  e.stopPropagation();
+  if(!confirm('Delete ticket '+order+'? This cannot be undone.'))return;
+  btn.textContent='...';btn.disabled=true;
+  callScript({action:'pmDelete',order:order}).then(function(){
+    var card=btn.closest('.ticket-item');
+    card.style.transition='opacity 0.3s';card.style.opacity='0';
+    setTimeout(function(){card.remove();},300);
+  }).catch(function(){btn.textContent='🗑';btn.disabled=false;alert('Delete failed. Try again.');});
+}
+
+function pmInlineSaveDue(btn,order,e){
+  e.stopPropagation();
+  var card=btn.closest('.ticket-item');
+  var newDue=card.querySelector('.pm-inline-due').value;
+  if(!newDue){alert('Please select a date.');return;}
+  btn.textContent='...';btn.disabled=true;
+  callScript({action:'pmUpdate',order:order,status:card.querySelector('.se-select').value,due:newDue}).then(function(){
+    var dueDisplay=formatDate(newDue);
+    card.querySelector('.ti-model').textContent='Due: '+dueDisplay;
+    btn.textContent='Save Date';btn.disabled=false;
+    card.querySelector('.ti-status-edit').classList.remove('open');
+  }).catch(function(){btn.textContent='Save Date';btn.disabled=false;alert('Could not save date.');});
+}
+
+function pmInlineSave(btn,order,e){
+  e.stopPropagation();
+  var card=btn.closest('.ticket-item');
+  var newStatus=card.querySelector('.se-select').value;
+  var chargePaidBy='',amountPaid='';
+  if(newStatus==='Delivered/Completed'){
+    chargePaidBy=card.querySelector('.pm-inline-payer').value;
+    if(!chargePaidBy){alert('Please select who paid the delivery charge.');return;}
+    if(chargePaidBy==='We Paid'){
+      amountPaid=card.querySelector('.pm-inline-amount-input').value;
+      if(!amountPaid){alert('Please enter the amount we paid.');return;}
+    }
+  }
+  btn.textContent='Saving...';btn.disabled=true;
+  callScript({action:'pmUpdate',order:order,status:newStatus,chargePaidBy:chargePaidBy,amountPaid:amountPaid}).then(function(){
+    var badge=card.querySelector('.status-badge');
+    badge.textContent=newStatus;badge.className='status-badge '+pmbc(newStatus);
+    card.querySelector('.ti-status-edit').classList.remove('open');
+    btn.textContent='Update & Notify';btn.disabled=false;
+    if(newStatus==='Delivered/Completed')card.classList.add('closed');
+    var waMsg='🛵 *PickMe Status Update*\nOrder: '+order+'\nNew Status: '+newStatus+(chargePaidBy?'\nDelivery Charge: '+chargePaidBy:'')+(amountPaid?'\nAmount: LKR '+amountPaid:'');
+    sendWA(PM_WA_GROUP,waMsg);
+  }).catch(function(){btn.textContent='Update & Notify';btn.disabled=false;});
+}
+
+function pmSubmit(){
+  var order=document.getElementById('pm-order').value.trim(),due=document.getElementById('pm-due').value;
+  var msg=document.getElementById('pm-add-msg'),btn=document.getElementById('pm-add-btn');
+  if(!order||!due){msg.textContent='Order number and due date are required.';msg.className='msg err';msg.classList.remove('hidden');return;}
+  btn.disabled=true;btn.textContent='Creating...';msg.classList.add('hidden');
+  callScript({action:'pmAdd',order:order,due:due}).then(function(){
+    btn.disabled=false;btn.textContent='📲 Create & Notify';
+    msg.textContent='Ticket created!';msg.className='msg ok';msg.classList.remove('hidden');
+    sendWA(PM_WA_GROUP,'🛵 *New PickMe Ticket*\nOrder: '+order+'\nDue Date: '+due+'\nStatus: To be Processed');
+    document.getElementById('pm-order').value='';document.getElementById('pm-due').value='';
+  }).catch(function(){btn.disabled=false;btn.textContent='📲 Create & Notify';msg.textContent='Could not create.';msg.className='msg err';msg.classList.remove('hidden');});
+}
+
+function pmSearch(){
+  var q=document.getElementById('pm-s-order').value.trim();if(!q)return;
+  document.getElementById('pm-s-loading').classList.remove('hidden');
+  document.getElementById('pm-s-result').classList.add('hidden');
+  document.getElementById('pm-s-notfound').classList.add('hidden');
+  fetchSheet(W_SHEET_ID,PM_SHEET_NAME).then(function(rows){
+    document.getElementById('pm-s-loading').classList.add('hidden');
+    var found=false;
+    rows.forEach(function(row,i){
+      if(i===0||found)return;
+      if(gc(row,1).toLowerCase().trim()===q.toLowerCase().trim()){
+        var t={order:gc(row,1),due:gc(row,2),status:gc(row,3),chargePaidBy:gc(row,4),amountPaid:gc(row,5)};
+        pmCurOrder=t.order;
+        document.getElementById('pm-sr-order').textContent='Order: '+t.order;
+        document.getElementById('pm-sr-due').textContent='Due: '+formatDate(t.due);
+        document.getElementById('pm-sr-status').textContent=t.status||'—';
+        document.getElementById('pm-sr-charge').textContent=t.chargePaidBy||'—';
+        document.getElementById('pm-sr-amount').textContent=t.amountPaid?'LKR '+t.amountPaid:'—';
+        var sel=document.getElementById('pm-u-status');
+        for(var j=0;j<sel.options.length;j++){if(sel.options[j].value===t.status){sel.selectedIndex=j;break;}}
+        document.getElementById('pm-delivery-charge').classList.add('hidden');
+        document.getElementById('pm-amount-field').classList.add('hidden');
+        document.getElementById('pm-charge-payer').selectedIndex=0;
+        document.getElementById('pm-u-due').value='';
+        document.getElementById('pm-u-msg').classList.add('hidden');
+        document.getElementById('pm-s-result').classList.remove('hidden');found=true;
+      }
+    });
+    if(!found)document.getElementById('pm-s-notfound').classList.remove('hidden');
+  }).catch(function(){document.getElementById('pm-s-loading').classList.add('hidden');document.getElementById('pm-s-notfound').classList.remove('hidden');});
+}
+
+function pmSaveDue(){
+  var newDue=document.getElementById('pm-u-due').value;
+  var msg=document.getElementById('pm-u-msg');
+  if(!newDue){msg.textContent='Please select a date.';msg.className='msg err';msg.classList.remove('hidden');return;}
+  msg.classList.add('hidden');
+  callScript({action:'pmUpdate',order:pmCurOrder,status:document.getElementById('pm-u-status').value,due:newDue}).then(function(){
+    document.getElementById('pm-sr-due').textContent='Due: '+formatDate(newDue);
+    document.getElementById('pm-u-due').value='';
+    msg.textContent='Due date updated!';msg.className='msg ok';msg.classList.remove('hidden');
+  }).catch(function(){msg.textContent='Could not save date.';msg.className='msg err';msg.classList.remove('hidden');});
+}
+
+function pmSave(){
+  var s=document.getElementById('pm-u-status').value;
+  var msg=document.getElementById('pm-u-msg'),btn=document.getElementById('pm-save-btn');
+  var chargePaidBy='',amountPaid='';
+  if(s==='Delivered/Completed'){
+    chargePaidBy=document.getElementById('pm-charge-payer').value;
+    if(!chargePaidBy){msg.textContent='Please select who paid delivery charge.';msg.className='msg err';msg.classList.remove('hidden');return;}
+    if(chargePaidBy==='We Paid'){
+      amountPaid=document.getElementById('pm-amount-input').value;
+      if(!amountPaid){msg.textContent='Please enter the amount we paid.';msg.className='msg err';msg.classList.remove('hidden');return;}
+    }
+  }
+  btn.disabled=true;btn.textContent='Saving...';msg.classList.add('hidden');
+  callScript({action:'pmUpdate',order:pmCurOrder,status:s,chargePaidBy:chargePaidBy,amountPaid:amountPaid}).then(function(){
+    btn.disabled=false;btn.textContent='Update & Notify';
+    document.getElementById('pm-sr-status').textContent=s;
+    if(chargePaidBy)document.getElementById('pm-sr-charge').textContent=chargePaidBy;
+    if(amountPaid)document.getElementById('pm-sr-amount').textContent='LKR '+amountPaid;
+    msg.textContent='Updated!';msg.className='msg ok';msg.classList.remove('hidden');
+    var waMsg='🛵 *PickMe Status Update*\nOrder: '+pmCurOrder+'\nNew Status: '+s+(chargePaidBy?'\nDelivery Charge: '+chargePaidBy:'')+(amountPaid?'\nAmount: LKR '+amountPaid:'');
+    sendWA(PM_WA_GROUP,waMsg);
+  }).catch(function(){btn.disabled=false;btn.textContent='Update & Notify';msg.textContent='Error.';msg.className='msg err';msg.classList.remove('hidden');});
+}
+
+function pmDelete(){
+  if(!confirm('Delete ticket '+pmCurOrder+'? This cannot be undone.'))return;
+  var btn=document.getElementById('pm-del-btn'),msg=document.getElementById('pm-u-msg');
+  btn.disabled=true;btn.textContent='Deleting...';msg.classList.add('hidden');
+  callScript({action:'pmDelete',order:pmCurOrder}).then(function(){
+    document.getElementById('pm-s-result').classList.add('hidden');
+    document.getElementById('pm-s-notfound').classList.add('hidden');
+    msg.classList.add('hidden');
+    btn.disabled=false;btn.textContent='🗑 Delete Ticket';
+    pmCurOrder=null;
+    alert('Ticket deleted.');
+  }).catch(function(){btn.disabled=false;btn.textContent='🗑 Delete Ticket';msg.textContent='Delete failed.';msg.className='msg err';msg.classList.remove('hidden');});
+}
+
+// DELIVERY TRACKER
+document.getElementById('dt-upload-area').addEventListener('click',function(){document.getElementById('dt-file').click();});
+document.getElementById('dt-file').addEventListener('change',function(){if(this.files.length>0){document.getElementById('dt-upload-area').querySelector('p').textContent='✅ '+this.files[0].name;document.getElementById('dt-upload-btn').style.display='block';}});
+document.getElementById('dt-s-order').addEventListener('keydown',function(e){if(e.key==='Enter')dtSearch('order');});
+document.getElementById('dt-s-waybill').addEventListener('keydown',function(e){if(e.key==='Enter')dtSearch('waybill');});
+
+function parseCSV(text){var lines=text.split('\n');var headers=lines[0].split(',').map(function(h){return h.replace(/"/g,'').trim();});var rows=[];for(var i=1;i<lines.length;i++){if(!lines[i].trim())continue;var vals=[],cur='',inQ=false;for(var c=0;c<lines[i].length;c++){if(lines[i][c]==='"'){inQ=!inQ;}else if(lines[i][c]===','&&!inQ){vals.push(cur.trim());cur='';}else{cur+=lines[i][c];}}vals.push(cur.trim());var row={};headers.forEach(function(h,j){row[h]=vals[j]?vals[j].replace(/"/g,'').trim():'';});rows.push(row);}return rows;}
+
+function dtUpload(){
+  var file=document.getElementById('dt-file').files[0];if(!file)return;
+  var btn=document.getElementById('dt-upload-btn'),msg=document.getElementById('dt-upload-msg');
+  btn.disabled=true;btn.textContent='Processing...';msg.classList.add('hidden');
+  var reader=new FileReader();
+  reader.onload=function(e){
+    try{
+      var rows=parseCSV(e.target.result);
+      callScript({action:'dtUpload',rows:rows}).then(function(){
+        btn.disabled=false;btn.textContent='Process & Upload';
+        msg.textContent='✅ '+rows.length+' records uploaded!';msg.className='msg ok';msg.classList.remove('hidden');
+      }).catch(function(){btn.disabled=false;btn.textContent='Process & Upload';msg.textContent='Upload failed.';msg.className='msg err';msg.classList.remove('hidden');});
+    }catch(err){btn.disabled=false;btn.textContent='Process & Upload';msg.textContent='Could not read file.';msg.className='msg err';msg.classList.remove('hidden');}
+  };
+  reader.readAsText(file);
+}
+
+function dtSearch(type){
+  var q=document.getElementById(type==='order'?'dt-s-order':'dt-s-waybill').value.trim();if(!q)return;
+  document.getElementById('dt-s-loading').classList.remove('hidden');
+  document.getElementById('dt-s-result').classList.add('hidden');
+  document.getElementById('dt-s-notfound').classList.add('hidden');
+  fetchSheet(W_SHEET_ID,DT_SHEET_NAME).then(function(rows){
+    document.getElementById('dt-s-loading').classList.add('hidden');
+    var colIdx=type==='order'?1:0,found=false;
+    rows.forEach(function(row,i){
+      if(i===0||found)return;
+      if(gc(row,colIdx).toLowerCase().trim()===q.toLowerCase().trim()){
+        var r={waybill:gc(row,0),order:gc(row,1),name:gc(row,2),city:gc(row,3),status:gc(row,4),isDelivered:gc(row,5),createdAt:gc(row,6),isCOD:gc(row,7),collectionAmount:gc(row,8)};
+        dtShowResult(r);found=true;
+      }
+    });
+    if(!found)document.getElementById('dt-s-notfound').classList.remove('hidden');
+  }).catch(function(){document.getElementById('dt-s-loading').classList.add('hidden');document.getElementById('dt-s-notfound').classList.remove('hidden');});
+}
+
+function dtShowResult(r){
+  var hd=getHandoverDate(r.createdAt);
+  var hdStr=hd?formatDate(hd.toISOString()):'—';
+  var hdLocal=localDateStr(hd);
+  var todayLocal=todayLocalStr();
+  var rawStatus=r.status?r.status.trim():'';
+  var displayStatus=rawStatus;
+  var isBlankStatus=false;
+  if(!rawStatus){
+    isBlankStatus=true;
+    if(hdLocal&&todayLocal<hdLocal){displayStatus='Yet to be handed over to courier on '+hdStr;}
+    else if(hdLocal&&todayLocal===hdLocal){displayStatus='Being handed over to courier today';}
+    else{displayStatus='In Transit';isBlankStatus=false;}
+  }
+  var isCOD=r.isCOD==='YES';
+  document.getElementById('dt-sr-order').textContent='Order: '+r.order;
+  document.getElementById('dt-sr-name').textContent=r.name||'—';
+  document.getElementById('dt-sr-waybill').textContent=r.waybill||'—';
+  document.getElementById('dt-sr-handover').textContent=hdStr;
+  document.getElementById('dt-sr-city').textContent=r.city||'—';
+  document.getElementById('dt-sr-payment').textContent=isCOD?'💵 COD — LKR '+(r.collectionAmount||'—'):'✅ Already Paid';
+  var stEl=document.getElementById('dt-sr-status');
+  stEl.textContent=displayStatus;
+  stEl.className='dt-status-text'+(r.isDelivered==='YES'?' dt-status-delivered':'');
+  var msg;
+  if(isBlankStatus){
+    if(hdLocal&&todayLocal<hdLocal){msg='The order is to be handed over to courier on '+hdStr+'.\n\nUsually within Colombo orders can take around 2-3 business days and outside Colombo orders can take around 2-5 business days.\n\nFor your reference,\nWaybill No. - '+r.waybill+'\nTracking Link - https://track.citypak.lk\nHotline - 011 769 7000\nWhatsApp - 070 306 1345';}
+    else{msg='The order is to be handed over to courier today.\n\nUsually within Colombo orders can take around 2-3 business days and outside Colombo orders can take around 2-5 business days.\n\nFor your reference,\nWaybill No. - '+r.waybill+'\nTracking Link - https://track.citypak.lk\nHotline - 011 769 7000\nWhatsApp - 070 306 1345';}
+  } else {
+    msg='The order has been dispatched to the courier on '+hdStr+'.\n\nAt the moment, it is '+displayStatus+' according to the courier.\n\nUsually within Colombo orders can take around 2-3 business days and outside Colombo orders can take around 2-5 business days.\n\nFor your reference,\nWaybill No. - '+r.waybill+'\nTracking Link - https://track.citypak.lk\nHotline - 011 769 7000\nWhatsApp - 070 306 1345';
+  }
+  document.getElementById('dt-copy-msg').textContent=msg;
+  document.getElementById('dt-s-result').classList.remove('hidden');
+}
+
+function dtCopy(){
+  var text=document.getElementById('dt-copy-msg').textContent;
+  var btn=document.querySelector('.copy-btn');
+  if(navigator.clipboard){navigator.clipboard.writeText(text).then(function(){btn.textContent='✅ Copied!';setTimeout(function(){btn.textContent='📋 Copy Message';},2000);});}
+  else{var ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.focus();ta.select();try{document.execCommand('copy');}catch(e){}document.body.removeChild(ta);btn.textContent='✅ Copied!';setTimeout(function(){btn.textContent='📋 Copy Message';},2000);}
+}
 </script>
 </body>
 </html>
