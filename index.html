@@ -30,6 +30,7 @@ textarea{height:60px;padding:8px 12px;resize:vertical}
 .btn.amber:hover{background:#fef3c7}
 .btn.sm{height:30px;padding:0 10px;font-size:12px}
 .btn.xs{height:26px;padding:0 8px;font-size:11px}
+.btn.xs.active{background:#185FA5;color:#fff;border-color:#185FA5}
 .btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
 .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(105px,1fr));gap:10px;margin-bottom:1.25rem}
 .stat{background:#fff;border-radius:10px;border:1px solid #e8e8e6;padding:.75rem 1rem}
@@ -57,7 +58,7 @@ textarea{height:60px;padding:8px 12px;resize:vertical}
 .pill.sick{background:#fee2e2;color:#991b1b}
 .pill.casual{background:#fee2e2;color:#991b1b}
 .pill.unpaid{background:#fecaca;color:#7f1d1d}
-.pill.halfday{background:#fecaca;color:#991b1b}
+.pill.halfday{background:#ede9fe;color:#6d28d9}
 .pill.perm{background:#fff7ed;color:#9a3412}
 .offday-badge{display:inline-flex;align-items:center;font-size:11px;padding:1px 7px;border-radius:20px;background:#ede9fe;color:#5b21b6;font-weight:500}
 .mini-bar{display:flex;gap:3px}
@@ -83,7 +84,7 @@ textarea{height:60px;padding:8px 12px;resize:vertical}
 .cal-cell.leave-sick{background:#fee2e2;color:#991b1b;font-weight:600}
 .cal-cell.leave-casual{background:#fee2e2;color:#991b1b;font-weight:600}
 .cal-cell.leave-unpaid{background:#fecaca;color:#7f1d1d;font-weight:600}
-.cal-cell.leave-half{background:#fecaca;color:#991b1b;font-weight:600}
+.cal-cell.leave-half{background:#ddd6fe;color:#6d28d9;font-weight:600}
 /* Weekly off = purple */
 .cal-cell.offday{background:#ede9fe;color:#5b21b6;font-weight:600}
 /* Mercantile = orange */
@@ -199,7 +200,8 @@ textarea{height:60px;padding:8px 12px;resize:vertical}
     <div class="cal-month-summary" id="calMonthSummary"></div>
     <div class="cal-grid" id="calGrid"></div>
     <div class="cal-legend">
-      <div class="leg-item"><div class="leg-dot" style="background:#fca5a5"></div>Leave (all types)</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#fca5a5"></div>Full day leave</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#ddd6fe"></div>Half day leave</div>
       <div class="leg-item"><div class="leg-dot" style="background:#c4b5fd"></div>Weekly off</div>
       <div class="leg-item"><div class="leg-dot" style="background:#fcd34d"></div>Mercantile holiday</div>
       <div class="leg-item"><div style="width:10px;height:10px;border-radius:50%;background:#f97316;flex-shrink:0"></div>Permission</div>
@@ -398,6 +400,36 @@ textarea{height:60px;padding:8px 12px;resize:vertical}
   </div>
 </div>
 </div>
+
+<!-- CSV Export modal -->
+<div class="modal-bg" id="csvModal">
+<div class="modal" style="width:min(400px,100%)">
+  <h3>Export CSV</h3>
+  <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px">
+    <button class="btn xs csv-preset active" data-preset="current" onclick="setCsvPreset('current')">This month</button>
+    <button class="btn xs csv-preset" data-preset="previous" onclick="setCsvPreset('previous')">Previous month</button>
+    <button class="btn xs csv-preset" data-preset="year" onclick="setCsvPreset('year')">This year</button>
+    <button class="btn xs csv-preset" data-preset="all" onclick="setCsvPreset('all')">All time</button>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+    <div><label style="display:block;font-size:13px;color:#666;margin-bottom:5px;font-weight:500">From date</label><input type="date" id="csv_from" style="width:100%"></div>
+    <div><label style="display:block;font-size:13px;color:#666;margin-bottom:5px;font-weight:500">To date</label><input type="date" id="csv_to" style="width:100%"></div>
+  </div>
+  <div style="display:flex;gap:14px;margin-bottom:16px">
+    <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer">
+      <input type="checkbox" id="csv_inc_leaves" checked> Include leaves
+    </label>
+    <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer">
+      <input type="checkbox" id="csv_inc_perms" checked> Include permissions
+    </label>
+  </div>
+  <div class="modal-actions">
+    <button class="btn" onclick="closeCsvModal()">Cancel</button>
+    <button class="btn success" onclick="doExportCSV()">&#11015; Download CSV</button>
+  </div>
+</div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -1059,7 +1091,7 @@ document.getElementById('confirmOkBtn').onclick=function(){if(confirmCb)confirmC
 
 [['leaveModal',()=>closeLeaveModal()],['permModal',()=>closePermModal()],
  ['empModal',()=>closeEmpModal()],['deptModal',()=>closeDeptModal()],
- ['confirmModal',()=>closeConfirm()]].forEach(([id,fn])=>{
+ ['confirmModal',()=>closeConfirm()],['csvModal',()=>closeCsvModal()]].forEach(([id,fn])=>{
   document.getElementById(id).addEventListener('click',function(e){if(e.target===this)fn();});
 });
 
