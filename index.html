@@ -402,7 +402,7 @@ textarea{height:60px;padding:8px 12px;resize:vertical}
 
 <script>
 // ══════════════════════════════════════════════════════
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyxTRQyt0dve1gWiQZfne5q-24r-QCmlVs1b3_jicfghFZwzd5SC43oJ0dd8HfvNDeQCA/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx8IfN5T_q7wkPN6x_6r8PLvMLWYNK7tmDEYu-F_t2hZnvn4Lya-CB6zU_6oIJOoOC84g/exec';
 // ══════════════════════════════════════════════════════
 
 const MERC = {
@@ -499,14 +499,14 @@ function range(from,to){
 }
 function leavemap(empId){
   const m={};
-  leaves.filter(l=>l.empId===empId).forEach(l=>{
+  leaves.filter(l=>Number(l.empId)===Number(empId)).forEach(l=>{
     range(l.from,l.to).forEach(d=>{m[d]={type:l.type,half:l.half||''};});
   });
   return m;
 }
 function permmap(empId){
   const m={};
-  permissions.filter(p=>p.empId===empId).forEach(p=>{m[p.date]=p;});
+  permissions.filter(p=>Number(p.empId)===Number(empId)).forEach(p=>{m[p.date]=p;});
   return m;
 }
 function fmt(ds){if(!ds)return '';const[y,m,d]=ds.split('-');return `${d}/${m}/${y}`;}
@@ -526,7 +526,7 @@ function switchTab(t){
 function renderStats(){
   const today=new Date().toISOString().slice(0,10);
   const onLeave=new Set();
-  leaves.forEach(l=>{if(range(l.from,l.to).includes(today))onLeave.add(l.empId);});
+  leaves.forEach(l=>{if(range(l.from,l.to).includes(today))onLeave.add(Number(l.empId));});
   const tm=new Date(),ty=tm.getFullYear(),tmo=tm.getMonth();
   const md=leaves.reduce((s,l)=>{
     const f=parseLocal(l.from);
@@ -598,7 +598,7 @@ function renderEmployees(){
 }
 
 function renderCalendar(){
-  const e=employees.find(x=>x.id===selectedEmpId);
+  const e=employees.find(x=>Number(x.id)===Number(selectedEmpId));
   if(!e){document.getElementById('calSection').style.display='none';return;}
   document.getElementById('calSection').style.display='block';
   const offday=e.offday!==''&&e.offday!==undefined?parseInt(e.offday):null;
@@ -659,7 +659,7 @@ function renderCalendar(){
 
   // Permissions list
   const monthPerms=permissions.filter(p=>{
-    if(p.empId!==e.id)return false;
+    if(Number(p.empId)!==Number(e.id))return false;
     const f=parseLocal(p.date);
     return f.getFullYear()===calY&&f.getMonth()===calM;
   }).sort((a,b)=>a.date.localeCompare(b.date));
@@ -690,7 +690,7 @@ function selectEmployee(id){
 }
 function shiftMonth(d){calM+=d;if(calM<0){calM=11;calY--;}if(calM>11){calM=0;calY++;}renderCalendar();}
 function calClick(ds){
-  const e=employees.find(x=>x.id===selectedEmpId);
+  const e=employees.find(x=>Number(x.id)===Number(selectedEmpId));
   if(e&&e.offday!==''&&e.offday!==undefined&&parseLocal(ds).getDay()===parseInt(e.offday))return;
   openLeaveModal(null);
   if(selectedEmpId)document.getElementById('lv_emp').value=selectedEmpId;
@@ -869,7 +869,7 @@ function renderPermReport(){
   const body=document.getElementById('permReportBody');
   if(!fil.length){body.innerHTML=`<tr><td colspan="7" style="text-align:center;padding:2rem;color:#aaa">No permissions found</td></tr>`;document.getElementById('permReportSummary').textContent='';return;}
   body.innerHTML=fil.map(p=>{
-    const e=employees.find(x=>x.id===p.empId)||{name:'Unknown',code:'-'};
+    const e=employees.find(x=>Number(x.id)===Number(p.empId))||{name:'Unknown',code:'-'};
     return `<tr>
       <td><strong>${e.name}</strong></td><td style="color:#888">${e.code}</td>
       <td>${fmt(p.date)}</td><td>${p.timeIn||'—'}</td><td>${p.timeOut||'—'}</td>
@@ -942,8 +942,8 @@ async function deleteEmployee(){
     spinner(true,'Removing…');
     try{
       await apiPost({action:'deleteEmployee',id:editingEmpId});
-      leaves=leaves.filter(l=>l.empId!==editingEmpId);
-      permissions=permissions.filter(p=>p.empId!==editingEmpId);
+      leaves=leaves.filter(l=>Number(l.empId)!==Number(editingEmpId));
+      permissions=permissions.filter(p=>Number(p.empId)!==Number(editingEmpId));
       employees=employees.filter(e=>e.id!==editingEmpId);
       if(selectedEmpId===editingEmpId)selectedEmpId=null;
       closeEmpModal();renderAll();showToast('Employee removed');
@@ -1007,7 +1007,7 @@ function renderReport(){
   const body=document.getElementById('reportBody');
   if(!fil.length){body.innerHTML=`<tr><td colspan="9" style="text-align:center;padding:2rem;color:#aaa">No records found</td></tr>`;document.getElementById('reportSummary').textContent='';return;}
   body.innerHTML=fil.map(l=>{
-    const e=employees.find(x=>x.id===l.empId)||{name:'Unknown',code:'-',dept:'-',empType:'-'};
+    const e=employees.find(x=>Number(x.id)===Number(l.empId))||{name:'Unknown',code:'-',dept:'-',empType:'-'};
     const d=l.half?0.5:range(l.from,l.to).length;
     return `<tr>
       <td><strong>${e.name}</strong></td>
@@ -1031,13 +1031,13 @@ function renderReport(){
 function exportCSV(){
   const rows=[['Employee','Code','Department','Emp Type','Leave Type','Half Day','From','To','Days','Note']];
   leaves.sort((a,b)=>a.from.localeCompare(b.from)).forEach(l=>{
-    const e=employees.find(x=>x.id===l.empId)||{name:'Unknown',code:'-',dept:'-',empType:'-'};
+    const e=employees.find(x=>Number(x.id)===Number(l.empId))||{name:'Unknown',code:'-',dept:'-',empType:'-'};
     rows.push([e.name,e.code,e.dept,e.empType||'full-time',l.type,l.half||'full',fmt(l.from),fmt(l.to),l.half?0.5:range(l.from,l.to).length,l.note||'']);
   });
   rows.push([]);rows.push(['--- PERMISSIONS ---']);
   rows.push(['Employee','Code','Date','Time In','Time Out','Reason']);
   permissions.sort((a,b)=>a.date.localeCompare(b.date)).forEach(p=>{
-    const e=employees.find(x=>x.id===p.empId)||{name:'Unknown',code:'-'};
+    const e=employees.find(x=>Number(x.id)===Number(p.empId))||{name:'Unknown',code:'-'};
     rows.push([e.name,e.code,fmt(p.date),p.timeIn||'',p.timeOut||'',p.reason||'']);
   });
   const csv=rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
