@@ -236,7 +236,7 @@ textarea{height:60px;padding:8px 12px;resize:vertical}
     </div>
     <div class="report-table-wrap">
       <table class="data-table">
-        <thead><tr><th>Employee</th><th>Code</th><th>Date</th><th>Time In</th><th>Time Out</th><th>Reason</th><th></th></tr></thead>
+        <thead><tr><th>Employee</th><th>Code</th><th>Date</th><th>Type</th><th>Time</th><th>Reason</th><th></th></tr></thead>
         <tbody id="permReportBody"></tbody>
       </table>
     </div>
@@ -328,9 +328,28 @@ textarea{height:60px;padding:8px 12px;resize:vertical}
   <h3 id="permModalTitle">Log permission</h3>
   <div class="form-row"><label>Employee</label><select id="pm_emp"></select></div>
   <div class="form-row"><label>Date</label><input type="date" id="pm_date"></div>
-  <div class="form-row-2">
-    <div><label>Actual time in <span style="font-weight:400;color:#bbb">(if came late)</span></label><input type="time" id="pm_timein"></div>
-    <div><label>Actual time out <span style="font-weight:400;color:#bbb">(if left early)</span></label><input type="time" id="pm_timeout"></div>
+  <div class="form-row">
+    <label>Permission type</label>
+    <select id="pm_type" onchange="updatePermFields()">
+      <option value="Late Start">Late Start</option>
+      <option value="Early Off">Early Off</option>
+      <option value="Mid-day Break">Mid-day Break</option>
+    </select>
+  </div>
+  <!-- Late Start: time in only -->
+  <div class="form-row" id="pm_row_timein">
+    <label id="pm_label_timein">Actual time arrived</label>
+    <input type="time" id="pm_timein" style="width:100%">
+  </div>
+  <!-- Early Off: time out only -->
+  <div class="form-row" id="pm_row_timeout" style="display:none">
+    <label id="pm_label_timeout">Time left</label>
+    <input type="time" id="pm_timeout" style="width:100%">
+  </div>
+  <!-- Mid-day Break: both times with labels -->
+  <div class="form-row-2" id="pm_row_break" style="display:none">
+    <div><label>Break start time</label><input type="time" id="pm_break_start" style="width:100%"></div>
+    <div><label>Break end time</label><input type="time" id="pm_break_end" style="width:100%"></div>
   </div>
   <div class="form-row"><label>Reason</label><textarea id="pm_reason" placeholder="e.g. Doctor appointment, family matter…"></textarea></div>
   <div class="err-msg" id="pm_err"></div>
@@ -434,7 +453,7 @@ textarea{height:60px;padding:8px 12px;resize:vertical}
 
 <script>
 // ══════════════════════════════════════════════════════
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzAFlvQQ9yIVp5Ug7jaYt1CKQDl4ujd_dnNfHBeHcctkOIyUxGmuBaLJ4_jUrwjNufF/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzznOflBm2vDHSzwoA5bN41RK1B_nwfckKfy1Xdx9CrNUz2Xe4rDtM0f27l9CEvwTGd4g/exec';
 // ══════════════════════════════════════════════════════
 
 const MERC = {
@@ -702,7 +721,10 @@ function renderCalendar(){
     permItemsEl.innerHTML=monthPerms.map(p=>`
       <div class="perm-item">
         <div class="perm-item-date">${fmt(p.date)}</div>
-        <div class="perm-item-times">${[p.timeIn,p.timeOut].filter(Boolean).join(' → ')||'—'}</div>
+        <div class="perm-item-times" style="min-width:100px">
+          <span style="font-size:10px;padding:1px 6px;border-radius:10px;font-weight:600;background:#fef3c7;color:#92400e;margin-right:4px">${p.permType||'Permission'}</span>
+          ${permTimeLabel(p)}
+        </div>
         <div class="perm-item-reason">${p.reason||'—'}</div>
         <button class="btn xs" onclick="openPermModal(${p.id})">Edit</button>
         <button class="btn xs danger" onclick="deletePermissionById(${p.id})">Del</button>
@@ -809,6 +831,12 @@ async function deleteLeave(id){
 }
 
 // ── Permissions ───────────────────────────────────────────────
+function updatePermFields(){
+  const t=document.getElementById('pm_type').value;
+  document.getElementById('pm_row_timein').style.display=t==='Late Start'?'':'none';
+  document.getElementById('pm_row_timeout').style.display=t==='Early Off'?'':'none';
+  document.getElementById('pm_row_break').style.display=t==='Mid-day Break'?'':'none';
+}
 function openPermModal(pmId){
   editingPermId=pmId;
   const sel=document.getElementById('pm_emp');
@@ -819,41 +847,61 @@ function openPermModal(pmId){
     document.getElementById('permModalTitle').textContent='Edit permission';
     sel.value=p.empId;
     document.getElementById('pm_date').value=p.date;
-    document.getElementById('pm_timein').value=p.timeIn||'';
-    document.getElementById('pm_timeout').value=p.timeOut||'';
+    document.getElementById('pm_type').value=p.permType||'Late Start';
+    // Restore times based on type
+    const pt=p.permType||'Late Start';
+    if(pt==='Late Start'){document.getElementById('pm_timein').value=p.timeIn||'';}
+    else if(pt==='Early Off'){document.getElementById('pm_timeout').value=p.timeOut||'';}
+    else if(pt==='Mid-day Break'){
+      document.getElementById('pm_break_start').value=p.timeIn||'';
+      document.getElementById('pm_break_end').value=p.timeOut||'';
+    }
     document.getElementById('pm_reason').value=p.reason||'';
     delBtn.style.display='';
   } else {
     document.getElementById('permModalTitle').textContent='Log permission';
     if(selectedEmpId)sel.value=selectedEmpId;
-    ['pm_date','pm_timein','pm_timeout','pm_reason'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('pm_type').value='Late Start';
+    ['pm_date','pm_timein','pm_timeout','pm_reason','pm_break_start','pm_break_end'].forEach(id=>{
+      const el=document.getElementById(id);if(el)el.value='';
+    });
     delBtn.style.display='none';
   }
   document.getElementById('pm_err').style.display='none';
+  updatePermFields();
   document.getElementById('permModal').classList.add('open');
 }
 function closePermModal(){document.getElementById('permModal').classList.remove('open');editingPermId=null;}
 async function savePermission(){
   const empId=parseInt(document.getElementById('pm_emp').value);
   const date=document.getElementById('pm_date').value;
-  const timeIn=document.getElementById('pm_timein').value;
-  const timeOut=document.getElementById('pm_timeout').value;
+  const permType=document.getElementById('pm_type').value;
   const reason=document.getElementById('pm_reason').value;
   const err=document.getElementById('pm_err');
   if(!date){err.style.display='block';err.textContent='Please select a date.';return;}
   err.style.display='none';
+  // Collect times based on type
+  let timeIn='',timeOut='';
+  if(permType==='Late Start'){
+    timeIn=document.getElementById('pm_timein').value;
+  } else if(permType==='Early Off'){
+    timeOut=document.getElementById('pm_timeout').value;
+  } else if(permType==='Mid-day Break'){
+    timeIn=document.getElementById('pm_break_start').value;
+    timeOut=document.getElementById('pm_break_end').value;
+  }
   const btn=document.getElementById('savePermBtn');btn.disabled=true;
   spinner(true,'Saving permission…');
   try{
-    const data={empId,date,timeIn,timeOut,reason};
+    const data={empId,date,permType,timeIn,timeOut,reason};
     if(editingPermId)data.id=editingPermId;
     const res=await apiPost({action:'savePermission',data});
     if(!editingPermId){
-      permissions.push({id:res.id,empId,date,timeIn,timeOut,reason});
+      permissions.push({id:res.id,empId,date,permType,timeIn,timeOut,reason});
       nextPermId=res.id+1;
     } else {
       const p=permissions.find(x=>x.id===editingPermId);
-      if(p){p.empId=empId;p.date=date;p.timeIn=timeIn;p.timeOut=timeOut;p.reason=reason;}
+      if(p){p.empId=empId;p.date=date;p.permType=permType;p.timeIn=timeIn;p.timeOut=timeOut;p.reason=reason;}
     }
     closePermModal();renderAll();if(activeTab==='permissions')renderPermReport();
     showToast(editingPermId?'Permission updated':'Permission saved');
@@ -879,6 +927,13 @@ async function deletePermissionById(id){
   });
 }
 
+function permTimeLabel(p){
+  const t=p.permType||'';
+  if(t==='Late Start')return p.timeIn?`Arrived ${p.timeIn}`:'—';
+  if(t==='Early Off')return p.timeOut?`Left ${p.timeOut}`:'—';
+  if(t==='Mid-day Break')return (p.timeIn&&p.timeOut)?`${p.timeIn} → ${p.timeOut}`:p.timeIn||p.timeOut||'—';
+  return [p.timeIn,p.timeOut].filter(Boolean).join(' → ')||'—';
+}
 function renderPermReport(){
   const empSel=document.getElementById('prpt_emp');
   const curE=empSel.value;
@@ -904,7 +959,9 @@ function renderPermReport(){
     const e=employees.find(x=>Number(x.id)===Number(p.empId))||{name:'Unknown',code:'-'};
     return `<tr>
       <td><strong>${e.name}</strong></td><td style="color:#888">${e.code}</td>
-      <td>${fmt(p.date)}</td><td>${p.timeIn||'—'}</td><td>${p.timeOut||'—'}</td>
+      <td>${fmt(p.date)}</td>
+      <td><span style="font-size:11px;padding:2px 7px;border-radius:10px;font-weight:600;background:#fef3c7;color:#92400e">${p.permType||'—'}</span></td>
+      <td style="font-size:12px;color:#555">${permTimeLabel(p)}</td>
       <td style="color:#888">${p.reason||'—'}</td>
       <td style="white-space:nowrap">
         <button class="btn xs" onclick="openPermModal(${p.id})">Edit</button>
